@@ -1,0 +1,32 @@
+# 设置Mapper接口所对应的XML文件位置，如果你在Mapper接口中有自定义方法，需要进行该配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  # 设置别名包扫描路径，通过该属性可以给包中的类注册别名
+  type-aliases-package: com.glm.entity.pojo
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # 逻辑删除
+  global-config:
+    db-config:
+      logic-delete-field: deleted # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+knife4j:
+  enableAggregation: false
+  nacos:
+    enable: false
+    serviceUrl: http://localhost:10000/nacos/
+    routeAuth:
+      enable: true
+      username: test
+      password: 12313
+    routes:
+      - name: 订单服务
+        serviceName: service-order
+        location: /v2/api-docs?group=default
+        swaggerVersion: 2.0
+        servicePath: /order
+        routeAuth:
+          enable: true
+          username: test
+          password: 12313
