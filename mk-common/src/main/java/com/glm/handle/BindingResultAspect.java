@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 public class BindingResultAspect {
     @Around("within(com.glm.controller.*)")
     public Object checkField(ProceedingJoinPoint point) throws Throwable {
-        String methodName = point.getSignature().getName();
         ControllerFieldAspect fieldAspect = point.getTarget().getClass().getAnnotation(ControllerFieldAspect.class);
         if (fieldAspect == null) {
             return point.proceed();

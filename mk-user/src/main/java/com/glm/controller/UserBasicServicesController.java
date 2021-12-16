@@ -33,14 +33,6 @@ public class UserBasicServicesController {
     @PostMapping("/login")
     @ApiOperation("用户登录")
     public ResponseResult login(@RequestBody @Valid LoginDTO loginDTO, BindingResult bindingResult) {
-       if (bindingResult.hasErrors()){
-           List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-           StringBuilder errorStrBuild = new StringBuilder();
-           for (FieldError fieldError : fieldErrors) {
-               errorStrBuild.append(fieldError.getDefaultMessage());
-           }
-           return ResponseResult.error(errorStrBuild.toString());
-       }
         return mkUserService.login(loginDTO);
     }
 
