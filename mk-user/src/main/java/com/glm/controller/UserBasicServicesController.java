@@ -2,6 +2,7 @@ package com.glm.controller;
 
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.LoginDTO;
+import com.glm.entity.dto.RegisterDTO;
 import com.glm.handle.ControllerFieldAspect;
 import com.glm.service.MkUserService;
 import io.swagger.annotations.Api;
@@ -9,10 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -23,7 +21,7 @@ import java.util.List;
  * @date ：2021/12/14 17:23
  */
 @RestController
-@RequestMapping("/basic/services")
+@RequestMapping("/basic")
 @Api(tags = "用户基础服务")
 @ControllerFieldAspect
 public class UserBasicServicesController {
@@ -38,7 +36,8 @@ public class UserBasicServicesController {
 
     @PostMapping("/register")
     @ApiOperation("用户注册")
-    public ResponseResult register() {
-        return null;
+    public ResponseResult register(@RequestBody @Valid RegisterDTO registerDTO, BindingResult bindingResult) {
+        System.out.println(registerDTO);
+        return mkUserService.register(registerDTO);
     }
 }

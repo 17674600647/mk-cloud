@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -42,8 +43,12 @@ public class BindingResultAspect {
         }
         if (bindingResult != null) {
             if (bindingResult.hasErrors()) {
-               // log.error(bindingResult.getAllErrors().toString());
-                return ResponseResult.error(ResponseCodeEnum.PARAMETER_ERROR);
+                // log.error(bindingResult.getAllErrors().toString());
+                StringBuilder errorStr = new StringBuilder();
+                for (ObjectError error : bindingResult.getAllErrors()) {
+                    errorStr.append(error.getDefaultMessage());
+                }
+                return ResponseResult.error("存在以下错误:"+errorStr);
             }
         }
         Object proceed = null;

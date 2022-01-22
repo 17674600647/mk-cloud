@@ -1,11 +1,12 @@
 package com.glm.config;
 
 import com.glm.entity.ResponseResult;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.PostConstruct;
 
 
 /**
@@ -14,6 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice//控制器增强
 @Slf4j
 public class ExceptionCatch {
+    @PostConstruct
+    public void init(){
+        log.info("--ExceptionCatch 加载--");
+    }
 
     //捕获Exception此类异常
     @ExceptionHandler(Exception.class)

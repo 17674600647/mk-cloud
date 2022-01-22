@@ -1,6 +1,7 @@
 package com.glm.filter;
 
-import lombok.extern.log4j.Log4j2;
+
+import com.alibaba.cloud.commons.lang.StringUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -14,12 +15,13 @@ import reactor.core.publisher.Mono;
 
 
 @Component
-@Log4j2
 public class AuthorizeFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-       /* //1获取请求对象,和响应对象
+        ServerHttpRequest request = exchange.getRequest();
+        System.out.println(request.getURI().getPath());
+      /*  //1获取请求对象,和响应对象
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         //2判断当前请求是否位登录,
@@ -54,10 +56,9 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
         } catch (Exception e) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
-        }
+        }*/
         //6.放行
-        return chain.filter(exchange);*/
-        return null;
+        return chain.filter(exchange);
     }
 
     /**

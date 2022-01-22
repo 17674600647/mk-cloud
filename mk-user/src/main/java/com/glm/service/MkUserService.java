@@ -2,7 +2,9 @@ package com.glm.service;
 
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.LoginDTO;
+import com.glm.entity.dto.RegisterDTO;
 import com.glm.entity.vo.LoginVO;
+import com.glm.entity.vo.RegisterVO;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,5 +15,6 @@ import org.springframework.stereotype.Service;
 
 
 public interface MkUserService {
-    public ResponseResult login(LoginDTO loginDTO);
+    public ResponseResult<LoginVO> login(LoginDTO loginDTO);
+    public ResponseResult register(RegisterDTO loginDTO);
 }

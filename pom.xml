@@ -7,6 +7,9 @@
         <module>mk-common</module>
         <module>mk-user</module>
         <module>mk-gateway</module>
+        <module>mk-base</module>
+        <module>mk-SSO</module>
+        <module>mk-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -37,10 +40,11 @@
         <knife4j.version>2.0.9</knife4j.version>
         <swagger.version>2.9.2</swagger.version>
         <knife4j-aggregation.version>2.0.9</knife4j-aggregation.version>
-        <mybatis.plus.version>3.3.0</mybatis.plus.version>
+        <mybatis.plus.version>3.4.3</mybatis.plus.version>
         <hibernate-validator.version>6.0.1.Final</hibernate-validator.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
         <aspectjweaver.version>1.9.2</aspectjweaver.version>
+        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -111,7 +115,6 @@
                 <artifactId>knife4j-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
@@ -128,6 +131,11 @@
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
                 <version>${aspectjweaver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
+                <version>${mybatis.plus.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
