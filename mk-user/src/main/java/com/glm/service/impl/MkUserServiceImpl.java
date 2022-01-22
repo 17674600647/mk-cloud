@@ -53,6 +53,7 @@ public class MkUserServiceImpl implements MkUserService {
         try {
             insert = userMapper.insert(registerMkUser);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseResult.error("注册失败~,账号或者邮箱存在~");
         }
         if (insert == 1) {

@@ -19,7 +19,7 @@ import java.util.Date;
 @TableName("mk_user")
 public class MkUser {
     @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private long id;
+    private Long id;
     @TableField(value = "username")
     private String username;
     @TableField(value = "password")
