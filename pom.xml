@@ -8,8 +8,7 @@
         <module>mk-user</module>
         <module>mk-gateway</module>
         <module>mk-base</module>
-        <module>mk-SSO</module>
-        <module>mk-service</module>
+        <module>mk-other</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -23,6 +22,7 @@
     <name>mk-parent</name>
     <description>mk-parent</description>
     <properties>
+        <spring.boot.version>2.3.5.RELEASE</spring.boot.version>
         <java.version>11</java.version>
         <spring.cloud.version>Hoxton.SR9</spring.cloud.version>
         <spring.cloud.alibaba.version>2.2.6.RELEASE</spring.cloud.alibaba.version>
@@ -33,9 +33,9 @@
         <log4j-version>2.1.5.RELEASE</log4j-version>
         <fastjson.version>1.2.58</fastjson.version>
         <fastjson.dataformat.version>2.9.9</fastjson.dataformat.version>
-        <hutool-version>5.7.17</hutool-version>
+        <hutool-version>5.7.20</hutool-version>
         <mybatis-version>2.2.0</mybatis-version>
-        <junit.version>3.8.1</junit.version>
+        <junit.version>4.12</junit.version>
         <log4j.version>2.5</log4j.version>
         <knife4j.version>2.0.9</knife4j.version>
         <swagger.version>2.9.2</swagger.version>
@@ -69,11 +69,7 @@
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt-version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-log4j2</artifactId>
-                <version>${log4j-version}</version>
-            </dependency>
+
             <!-- fastjson -->
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -92,14 +88,11 @@
             </dependency>
             <dependency>
                 <groupId>cn.hutool</groupId>
-                <artifactId>hutool-bom</artifactId>
+                <artifactId>hutool-all</artifactId>
                 <version>${hutool-version}</version>
-                <type>pom</type>
-                <!-- 注意这里是import -->
-                <scope>import</scope>
             </dependency>
             <!--log4j依赖-->
-            <dependency>
+       <!--     <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
                 <version>${log4j.version}</version>
@@ -108,7 +101,7 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j.version}</version>
-            </dependency>
+            </dependency>-->
             <!--knife4j依赖-->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>

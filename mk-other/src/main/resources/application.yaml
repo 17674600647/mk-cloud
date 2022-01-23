@@ -1,0 +1,26 @@
+server:
+  port: 11302
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://47.103.216.189:5432/mk-cloud?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
+    username: postgres
+    password: '@Lzy2018.cn'
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 47.103.216.189:8848
+        namespace: 3908062f-c0bb-426d-8081-589594521b36
+      config:
+        max-retry: 0
+  redis:
+    host: 47.103.216.189
+    port: 6379
+    password: '@Lzy2018.cn'
+    timeout: 30000
+
+
+
+
+
+
