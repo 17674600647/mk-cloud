@@ -21,7 +21,7 @@ import java.util.List;
  * @date ：2021/12/14 17:23
  */
 @RestController
-@RequestMapping("/basic")
+@RequestMapping("/base")
 @Api(tags = "用户基础服务")
 @ControllerFieldAspect
 public class UserBasicServicesController {
