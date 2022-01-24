@@ -72,13 +72,12 @@ public class MkUserServiceImpl implements MkUserService {
 
     @Override
     public ResponseResult register(RegisterDTO registerDTO) {
-        String redisKey=redisPrefix + registerDTO.getEmail();
-        String checkCode = (String) redisUtil.get(redisKey);
-        log.info("RedisKey"+redisPrefix + registerDTO.getEmail());
+        String checkCode = (String) redisUtil.get(redisPrefix + registerDTO.getEmail());
+        log.info("RedisKey:"+redisPrefix + registerDTO.getEmail());
         if (Objects.isNull(checkCode) || checkCode.length() == 0) {
             return ResponseResult.error("请点击发送验证码~");
         }
-        if (checkCode.equals(registerDTO.getCheckCode())) {
+        if (!checkCode.equals(registerDTO.getCheckCode())) {
             {
                 return ResponseResult.error("验证码不正确~");
             }
