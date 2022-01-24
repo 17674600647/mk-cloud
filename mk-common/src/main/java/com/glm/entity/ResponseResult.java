@@ -3,9 +3,9 @@ package com.glm.entity;
 import org.springframework.validation.BindingResult;
 
 public class ResponseResult<T> {
-    String code;
-    String message;
-    T data;
+    private String code;
+    private String message;
+    private T data;
 
     public String getCode() {
         return code;
@@ -52,8 +52,9 @@ public class ResponseResult<T> {
     public static ResponseResult<Object> error(ResponseCodeEnum responseCodeEnum) {
         return new ResponseResult<>(responseCodeEnum.getCode(), responseCodeEnum.getMsg());
     }
-    public  ResponseResult<Object> error(ResponseCodeEnum responseCodeEnum,Object data) {
-        return new ResponseResult<>(responseCodeEnum.getCode(), responseCodeEnum.getMsg(),data);
+
+    public ResponseResult<Object> error(ResponseCodeEnum responseCodeEnum, Object data) {
+        return new ResponseResult<>(responseCodeEnum.getCode(), responseCodeEnum.getMsg(), data);
     }
 
     public static ResponseResult<Object> success(String msg) {

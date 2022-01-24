@@ -3,7 +3,9 @@ package com.glm.service.impl;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTHeader;
 import cn.hutool.jwt.JWTUtil;
+import com.glm.utils.RedisUtil;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashMap;
@@ -17,10 +19,14 @@ import java.util.Map;
 
 @SpringBootTest
 public class MkUserServiceImplTest {
+    @Autowired
+    RedisUtil redisUtil;
+
     @Test
-    public void JWTTest(){
+    public void JWTTest() {
         Map<String, Object> map = new HashMap<String, Object>() {
             private static final long serialVersionUID = 1L;
+
             {
                 put("uid", Integer.parseInt("123"));
                 put("expire_time", System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 15);
@@ -32,7 +38,7 @@ public class MkUserServiceImplTest {
     }
 
     @Test
-    public void JWTParse(){
+    public void JWTParse() {
         String rightToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9." +
                 "eyJzdWIiOiIxMjM0NTY3ODkwIiwiYWRtaW4iOnRydWUsIm5hbWUiOiJsb29seSJ9." +
                 "U2aQkC2THYV9L0fTN-yBBI7gmo5xhmvMhATtu8v0zEA";
@@ -41,5 +47,10 @@ public class MkUserServiceImplTest {
 
         jwt.getHeader(JWTHeader.TYPE);
         jwt.getPayload("sub");
+    }
+
+    @Test
+    public void test2() {
+        System.out.println((String) redisUtil.get("mkcloud_1044204713@qq.com"));
     }
 }

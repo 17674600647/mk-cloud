@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * @date ：2021/12/16 18:19
  */
 @Configuration
-@ComponentScan("com.glm.handle")
+@ComponentScan("com.glm.exception")
 public class BindingResultAspectConfig {
 
 
