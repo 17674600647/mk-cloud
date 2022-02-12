@@ -33,7 +33,6 @@ public class BindingResultAspect {
             if (args[i] instanceof BindingResult) {
                 bindingResult = (BindingResult) args[i];
             }
-
         }
         if (bindingResult != null) {
             if (bindingResult.hasErrors()) {

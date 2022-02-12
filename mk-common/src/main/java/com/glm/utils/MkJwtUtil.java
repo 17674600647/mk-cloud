@@ -30,7 +30,7 @@ public class MkJwtUtil {
         return JWT.create()
                 .setPayload("UserInfoMap", map)
                 .setKey(key)
-                .setExpiresAt(new DateTime().offset(DateField.HOUR, 1))
+                .setExpiresAt(new DateTime().offset(DateField.DAY_OF_WEEK, 1))
                 .sign();
     }
 

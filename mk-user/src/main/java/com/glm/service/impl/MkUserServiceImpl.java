@@ -1,8 +1,11 @@
 package com.glm.service.impl;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWTUtil;
 import com.glm.entity.ExceptionGlobal;
 import com.glm.entity.ResponseResult;
@@ -36,6 +39,8 @@ public class MkUserServiceImpl implements MkUserService {
     @Autowired
     private MkUserMapper userMapper;
 
+    private final String TokenPre = "TOKEN_";
+
     @Value("${Email.checkCode}")
     String redisPrefix;
 
@@ -61,19 +66,25 @@ public class MkUserServiceImpl implements MkUserService {
             return ResponseResult.error("账号/邮箱密码不匹配~");
         }
         MkUser mkUser = mkUsers.get(0);
+        mkUser.desensitized();
         Map<String, String> jwtMap = new HashMap<String, String>();
         jwtMap.put("userId", mkUser.getId().toString());
         jwtMap.put("nickName", mkUser.getNickName());
         String token = mkjwtUtil.createToken(jwtMap);
+        //用户信息base64位编码保存
+        String userInfoBase64 = Base64.encode(JSONUtil.toJsonStr(mkUser));
         LoginVO loginVO = new LoginVO();
         loginVO.setToken(token);
+        loginVO.setAuthInfo(userInfoBase64);
+        //保存到Redis,过期时间设置为1小时
+        redisUtil.set(TokenPre+mkUser.getUsername(),token,3600);
         return ResponseResult.success("登录成功", loginVO);
     }
 
     @Override
     public ResponseResult register(RegisterDTO registerDTO) {
         String checkCode = (String) redisUtil.get(redisPrefix + registerDTO.getEmail());
-        log.info("RedisKey:"+redisPrefix + registerDTO.getEmail());
+        log.info("RedisKey:" + redisPrefix + registerDTO.getEmail());
         if (Objects.isNull(checkCode) || checkCode.length() == 0) {
             return ResponseResult.error("请点击发送验证码~");
         }

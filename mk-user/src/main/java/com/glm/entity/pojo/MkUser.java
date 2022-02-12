@@ -1,5 +1,6 @@
 package com.glm.entity.pojo;
 
+import cn.hutool.core.util.DesensitizedUtil;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,4 +39,11 @@ public class MkUser {
     private String describe;
     @TableField(value = "nickname")
     private String nickName;
+
+    //信息脱敏
+    public void desensitized(){
+        this.password=null;
+        this.email = DesensitizedUtil.email(this.email);
+    }
+
 }

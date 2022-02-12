@@ -14,4 +14,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class LoginVO {
     private String token;
+    private String authInfo;
 }
