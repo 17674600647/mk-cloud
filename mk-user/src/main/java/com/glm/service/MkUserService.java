@@ -1,6 +1,7 @@
 package com.glm.service;
 
 import com.glm.entity.ResponseResult;
+import com.glm.entity.dto.AuthDto;
 import com.glm.entity.dto.LoginDTO;
 import com.glm.entity.dto.RegisterDTO;
 import com.glm.entity.vo.LoginVO;
@@ -16,5 +17,8 @@ import org.springframework.stereotype.Service;
 
 public interface MkUserService {
     public ResponseResult<LoginVO> login(LoginDTO loginDTO);
+
     public ResponseResult register(RegisterDTO loginDTO);
+
+    public ResponseResult verifyToken(AuthDto author);
 }

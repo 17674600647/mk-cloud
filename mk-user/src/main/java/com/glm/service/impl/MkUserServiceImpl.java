@@ -4,16 +4,17 @@ import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
-import cn.hutool.json.JSON;
+
 import cn.hutool.json.JSONUtil;
-import cn.hutool.jwt.JWTUtil;
-import com.glm.entity.ExceptionGlobal;
+
+import com.glm.entity.FinalString;
 import com.glm.entity.ResponseResult;
+import com.glm.entity.dto.AuthDto;
 import com.glm.entity.dto.LoginDTO;
 import com.glm.entity.dto.RegisterDTO;
 import com.glm.entity.pojo.MkUser;
 import com.glm.entity.vo.LoginVO;
-import com.glm.entity.vo.RegisterVO;
+
 import com.glm.mapper.MkUserMapper;
 import com.glm.service.MkUserService;
 import com.glm.utils.MkJwtUtil;
@@ -40,6 +41,7 @@ public class MkUserServiceImpl implements MkUserService {
     private MkUserMapper userMapper;
 
     private final String TokenPre = "TOKEN_";
+    private final int TokenOverTime = 3600;
 
     @Value("${Email.checkCode}")
     String redisPrefix;
@@ -68,7 +70,7 @@ public class MkUserServiceImpl implements MkUserService {
         MkUser mkUser = mkUsers.get(0);
         mkUser.desensitized();
         Map<String, String> jwtMap = new HashMap<String, String>();
-        jwtMap.put("userId", mkUser.getId().toString());
+        jwtMap.put(FinalString.USERID, mkUser.getId().toString());
         jwtMap.put("nickName", mkUser.getNickName());
         String token = mkjwtUtil.createToken(jwtMap);
         //用户信息base64位编码保存
@@ -77,7 +79,7 @@ public class MkUserServiceImpl implements MkUserService {
         loginVO.setToken(token);
         loginVO.setAuthInfo(userInfoBase64);
         //保存到Redis,过期时间设置为1小时
-        redisUtil.set(TokenPre+mkUser.getUsername(),token,3600);
+        redisUtil.set(TokenPre + mkUser.getId(), token, TokenOverTime);
         return ResponseResult.success("登录成功", loginVO);
     }
 
@@ -114,4 +116,14 @@ public class MkUserServiceImpl implements MkUserService {
 
     }
 
+    @Override
+    public ResponseResult verifyToken(AuthDto authDto) {
+        String userId = mkjwtUtil.getUserIdByToken(authDto.getToken().trim());
+        if (redisUtil.get(TokenPre + userId) != null) {
+            //重新设置时间
+            redisUtil.expire(TokenPre + userId, TokenOverTime);
+            return ResponseResult.success("登陆状态未失效");
+        }
+        return ResponseResult.error("登陆状态失效");
+    }
 }

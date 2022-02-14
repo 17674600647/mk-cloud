@@ -2,6 +2,9 @@ package com.glm.filter;
 
 
 import com.alibaba.cloud.commons.lang.StringUtils;
+
+import com.glm.feign.MkUserFeign;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -13,19 +16,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 
 @Component
 public class AuthorizeFilter implements GlobalFilter, Ordered {
+
+    @Autowired
+    MkUserFeign MkUserFeign;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         System.out.println(request.getURI().getPath());
-      /*  //1获取请求对象,和响应对象
-        ServerHttpRequest request = exchange.getRequest();
+        //1获取请求对象,和响应对象
         ServerHttpResponse response = exchange.getResponse();
         //2判断当前请求是否位登录,
-        if (request.getURI().getPath().contains("/login/in")) {
+        if (request.getURI().getPath().contains("/base/login")) {
             //放行
             return chain.filter(exchange);
         }
@@ -38,25 +45,18 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }
+        String code;
         try {
             //5如果令牌有效,解析JWT令牌,如果令牌无效返回错误
-            Claims claims = AppJwtUtil.getClaimsBody(token);
-            int result = AppJwtUtil.verifyToken(claims);
-
-            if (result == 0 || result == -1) {
-                Integer id = (Integer) claims.get("id");
-                log.info("find userid;{} from uri:{}", id, request.getURI());
-                //重新设置token
-                ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
-                    httpHeaders.add("userId", id + "");
-                }).build();
-                //5.1合法向header中重新设置id
-                exchange.mutate().request(serverHttpRequest).build();
-            }
+            code = MkUserFeign.verifyTokenRPC(token);
         } catch (Exception e) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
-        }*/
+        }
+        if (!"200".equals(code)) {
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return response.setComplete();
+        }
         //6.放行
         return chain.filter(exchange);
     }

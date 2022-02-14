@@ -28,11 +28,19 @@ spring:
             - Path=/mkuser/** #判断匹配条件,即地址带有/user/**的请求,会转发至lb:mk-user
           filters:
             - StripPrefix= 1 #去掉Path前缀,参数为1代表去掉/user
-              # 平台管理
+
         - id: mk-other
           uri: lb://mk-other
           predicates:
             - Path=/mkother/** #判断匹配条件,即地址带有/user/**的请求,会转发至lb:mk-user
+          filters:
+            - StripPrefix= 1 #去掉Path前缀,参数为1代表去掉/user
+
+
+        - id: mk-base
+          uri: lb://mk-base
+          predicates:
+            - Path=/mkbase/** #判断匹配条件,即地址带有/user/**的请求,会转发至lb:mk-user
           filters:
             - StripPrefix= 1 #去掉Path前缀,参数为1代表去掉/user
 

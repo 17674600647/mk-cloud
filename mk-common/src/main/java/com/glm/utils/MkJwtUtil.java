@@ -5,7 +5,9 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.exceptions.ValidateException;
 import cn.hutool.jwt.JWT;
+import cn.hutool.jwt.JWTUtil;
 import cn.hutool.jwt.JWTValidator;
+import com.glm.entity.FinalString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,40 +24,36 @@ import java.util.Map;
 public class MkJwtUtil {
     @Value("${Jwt.key}")
     String JwtKey;
+    final String TOKEN_USERINFO = "UserInfoMap";
 
     public String createToken(Map map) {
         // 密钥
         byte[] key = JwtKey.getBytes();
         // 使用HuTool工具的 HS265(HmacSHA256)算法
         return JWT.create()
-                .setPayload("UserInfoMap", map)
+                .setPayload(TOKEN_USERINFO, map)
                 .setKey(key)
                 .setExpiresAt(new DateTime().offset(DateField.DAY_OF_WEEK, 1))
                 .sign();
     }
 
-    public Map parseToken(String token) {
-        // 密钥
-        byte[] key = JwtKey.getBytes();
-
-        JWTValidator.of(token).validateDate();
-        return null;
+    //获取用户信息
+    public Map<String, String> getUserInfoByToken(String token) {
+        JWT jwt = JWT.of(token);
+        return (Map<String, String>) jwt.getPayload(TOKEN_USERINFO);
     }
+
+    //获取用户ID
+    public String getUserIdByToken(String token) {
+        Map<String, String> userIdMap = getUserInfoByToken(token);
+        return userIdMap.get(FinalString.USERID);
+    }
+
 
     //验证JWT是否有效
     public boolean checkJWT(String token) {
         // 默认验证HS265的算法
         return JWT.of(token).setKey(JwtKey.getBytes()).verify();
-    }
-
-    //验证是否还具有活性
-    public Boolean JwtActive(String token) {
-        try {
-         JWTValidator.of(token).validateDate(DateUtil.date(), 600);
-        } catch (ValidateException e) {
-            return false;
-        }
-        return true;
     }
 
 }
