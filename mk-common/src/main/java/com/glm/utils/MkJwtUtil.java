@@ -9,9 +9,14 @@ import cn.hutool.jwt.JWTUtil;
 import cn.hutool.jwt.JWTValidator;
 import com.glm.entity.FinalString;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @program: mk-cloud
@@ -56,4 +61,13 @@ public class MkJwtUtil {
         return JWT.of(token).setKey(JwtKey.getBytes()).verify();
     }
 
+    //从请求头中获取
+    public String getUserIdFromHeader() {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        String token = request.getHeader("token");
+        if (token != null) {
+            return getUserIdByToken(token);
+        }
+        return null;
+    }
 }

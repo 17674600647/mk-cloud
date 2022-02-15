@@ -27,7 +27,7 @@ public class Knife4jConfiguration {
                         .version("1.0")
                         .build())
                 //分组名称
-                .groupName("Other服务")
+                .groupName("base服务")
                 .select()
                 //这里指定Controller扫描包路径
                 .apis(RequestHandlerSelectors.basePackage("com.glm.controller"))

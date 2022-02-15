@@ -7,6 +7,7 @@ import cn.hutool.crypto.SecureUtil;
 
 import cn.hutool.json.JSONUtil;
 
+import com.glm.config.exception.TestException;
 import com.glm.entity.FinalString;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.AuthDto;

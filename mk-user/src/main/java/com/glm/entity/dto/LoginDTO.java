@@ -21,6 +21,7 @@ public class LoginDTO {
     @NotNull(message = "account不能为空！")
     @NotEmpty(message = "account不能为空格！")
     private String account;
+
     @NotNull(message = "password不能为空!")
     @NotEmpty(message = "password不能为空格！")
     private String password;

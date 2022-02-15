@@ -7,7 +7,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 
 @EnableDiscoveryClient
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.glm"})
 @EnableFeignClients
 @EnableAspectJAutoProxy
 public class MkUserStart {

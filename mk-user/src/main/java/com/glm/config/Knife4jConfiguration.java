@@ -1,6 +1,7 @@
 package com.glm.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -12,6 +13,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 @Configuration
 @EnableSwagger2WebMvc
+@ComponentScan("com.glm.config")
 public class Knife4jConfiguration {
 
     @Bean(value = "defaultApi2")

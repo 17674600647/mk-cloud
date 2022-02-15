@@ -26,14 +26,14 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/base")
 @Api(tags = "其他服务基础服务接口")
-@ControllerFieldAspect
+
 public class BaseServiceController {
     @Autowired
     EmailService emailService;
 
     @PostMapping("/email/send")
     @ApiOperation("发送邮箱验证码接口")
-    public ResponseResult emailSend(@RequestBody @Valid EmailSendDTO emailSendDTO, BindingResult bindingResult) {
+    public ResponseResult emailSend(@RequestBody @Valid EmailSendDTO emailSendDTO) {
         return emailService.sendEmail(emailSendDTO.getEmail());
     }
 

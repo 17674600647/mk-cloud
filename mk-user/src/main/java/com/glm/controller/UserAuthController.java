@@ -26,20 +26,19 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/auth")
 @Api(tags = "用户身份验证接口")
-@ControllerFieldAspect
 public class UserAuthController {
     @Autowired
     MkUserService mkUserService;
 
     @RequestMapping("/tokenCheck")
     @ApiOperation("用户Token身份验证")
-    public ResponseResult verifyToken(@RequestBody @Valid AuthDto authdto, BindingResult bindingResult) {
+    public ResponseResult verifyToken(@RequestBody @Valid AuthDto authdto) {
         return mkUserService.verifyToken(authdto);
     }
 
     @RequestMapping("/rpc/tokenCheck")
     @ApiOperation("用户Token身份验证,RPC接口")
-    public String verifyTokenRPC(@RequestBody String token, BindingResult bindingResult) {
+    public String verifyTokenRPC(@RequestBody String token) {
         AuthDto authDto = new AuthDto();
         authDto.setToken(token);
         return mkUserService.verifyToken(authDto).getCode();

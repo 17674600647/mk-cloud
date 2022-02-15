@@ -1,23 +1,25 @@
 package com.glm.config;
 
-
+import com.glm.config.exception.TestException;
 import com.glm.entity.ResponseResult;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-
 /**
- * 异常处理类
- */
-@RestControllerAdvice(basePackages="com.glm.controller")//控制器增强
-@Log4j2
-public class ExceptionCatch {
+ * @program: mk-cloud
+ * @description:
+ * @author: lizhiyong
+ * @create: 2022-02-15 18:22
+ **/
 
+@Log4j2
+@RestControllerAdvice
+public class ExceptionPlus extends  MyExceptionCatch{
     //捕获Exception此类异常
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(TestException.class)
     @ResponseBody
     public ResponseResult exception(Exception exception) {
         exception.printStackTrace();
