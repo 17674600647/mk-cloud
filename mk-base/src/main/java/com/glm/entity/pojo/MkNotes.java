@@ -31,7 +31,7 @@ public class MkNotes {
     private Date updateTime;
     @TableLogic(value = "deleted")
     private Long deleted;
-    @TableField(value = "userId")
+    @TableField(value = "user_id")
     private Long userId;
     @TableField(value = "classic")
     private Long classic;

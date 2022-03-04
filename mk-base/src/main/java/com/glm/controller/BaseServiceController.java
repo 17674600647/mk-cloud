@@ -34,8 +34,7 @@ public class BaseServiceController {
     @PostMapping("/save/note")
     @ApiOperation("保存文章")
     public ResponseResult saveNote(@RequestBody @Valid NoteDTO noteDTO) {
-        noteService.saveNote(noteDTO);
-        return null;
+        return  noteService.saveNote(noteDTO);
     }
 
 }

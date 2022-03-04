@@ -5,5 +5,5 @@ import com.glm.entity.pojo.MkNotes;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface MkUserMapper extends BaseMapper<MkNotes> {
+public interface MkNoteMapper extends BaseMapper<MkNotes> {
 }

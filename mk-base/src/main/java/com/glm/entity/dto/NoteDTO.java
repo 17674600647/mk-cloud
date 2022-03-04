@@ -20,7 +20,7 @@ import static io.lettuce.core.pubsub.PubSubOutput.Type.message;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoteDTO {
-    private String noteId;
+    private Long noteId;
     @NotNull(message = "title不能为空！")
     @NotEmpty(message = "title不能为空格！")
     private String title;
