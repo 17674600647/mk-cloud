@@ -1,8 +1,14 @@
 package com.glm.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.glm.entity.ResponseResult;
+import com.glm.entity.dto.GetNotesDTO;
 import com.glm.entity.dto.NoteDTO;
 import com.glm.entity.pojo.MkNotes;
+import com.glm.entity.vo.NotesPageVO;
 import com.glm.mapper.MkNoteMapper;
 import com.glm.service.NoteService;
 import com.glm.utils.MkJwtUtil;
@@ -33,7 +39,24 @@ public class NoteServiceImpl implements NoteService {
         mkNotes.setContent(noteDTO.getContent());
         mkNotes.setTitle(noteDTO.getTitle());
         mkNotes.setUserId(userId);
-        mkNoteMapper.insert(mkNotes);
-        return ResponseResult.success("保存成功!");
+        int result = mkNoteMapper.insert(mkNotes);
+        if (result == 1) {
+            return ResponseResult.success("保存成功!", mkNotes.getId());
+        }
+        return ResponseResult.error("保存失败!");
+    }
+
+    @Override
+    public ResponseResult getPageNotes(GetNotesDTO getNote) {
+        IPage<MkNotes> notePage = new Page<MkNotes>(getNote.getCurrentPage(), getNote.getPageSize());
+        QueryWrapper<MkNotes> queryWrapper = Wrappers.<MkNotes>query()
+                .orderByDesc("create_time")
+                .select("id", "title", "create_time", "update_time", "classic", "user_id")
+                .eq("user_id", Long.valueOf(mkJwtUtil.getUserIdFromHeader()));
+        IPage<MkNotes> mkNotesIPage = mkNoteMapper.selectPage(notePage, queryWrapper);
+        NotesPageVO notesPageVO = new NotesPageVO();
+        notesPageVO.setTotal(mkNotesIPage.getTotal());
+        notesPageVO.setNoteList(mkNotesIPage.getRecords());
+        return ResponseResult.success("查询成功!", notesPageVO);
     }
 }

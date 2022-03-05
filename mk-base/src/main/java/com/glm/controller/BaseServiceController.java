@@ -1,5 +1,6 @@
 package com.glm.controller;
 
+import com.glm.entity.dto.GetNotesDTO;
 import com.glm.entity.dto.NoteDTO;
 import com.glm.entity.ResponseResult;
 import com.glm.exception.ControllerFieldAspect;
@@ -35,6 +36,12 @@ public class BaseServiceController {
     @ApiOperation("保存文章")
     public ResponseResult saveNote(@RequestBody @Valid NoteDTO noteDTO) {
         return  noteService.saveNote(noteDTO);
+    }
+
+    @PostMapping("/get/notes")
+    @ApiOperation("分页查询文章列表")
+    public ResponseResult getNote(@RequestBody @Valid GetNotesDTO getNote) {
+        return  noteService.getPageNotes(getNote);
     }
 
 }

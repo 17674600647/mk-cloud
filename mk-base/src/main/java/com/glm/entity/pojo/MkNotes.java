@@ -1,9 +1,11 @@
 package com.glm.entity.pojo;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -25,12 +27,14 @@ public class MkNotes {
     private String title;
     @TableField(value = "content")
     private String content;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
-    @TableLogic(value = "deleted")
-    private Long deleted;
+    @TableLogic
+    private Integer deleted;
     @TableField(value = "user_id")
     private Long userId;
     @TableField(value = "classic")
