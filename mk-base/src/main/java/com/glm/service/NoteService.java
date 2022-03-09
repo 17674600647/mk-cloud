@@ -2,6 +2,7 @@ package com.glm.service;
 
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.GetNotesDTO;
+import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.NoteDTO;
 
 /**
@@ -13,4 +14,5 @@ import com.glm.entity.dto.NoteDTO;
 public interface NoteService {
     public ResponseResult saveNote(NoteDTO noteDTO);
     public ResponseResult getPageNotes(GetNotesDTO getNote );
+    public ResponseResult getOneNotes(GetOneNoteDTO getNote );
 }
