@@ -79,11 +79,47 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
+    public ResponseResult getPageDeleteNotes(GetNotesDTO getNote) {
+        IPage<MkNotes> notePage = new Page<MkNotes>(getNote.getCurrentPage(), getNote.getPageSize());
+        IPage<MkNotes> mkNotesIPage = mkNoteMapper.getDeleteNotes(notePage,Long.valueOf(mkJwtUtil.getUserIdFromHeader()));
+        NotesPageVO notesPageVO = new NotesPageVO();
+        notesPageVO.setTotal(mkNotesIPage.getTotal());
+        notesPageVO.setNoteList(mkNotesIPage.getRecords());
+        return ResponseResult.success("查询成功!", notesPageVO);
+    }
+
+    @Override
     public ResponseResult getOneNotes(GetOneNoteDTO getNote) {
-        MkNotes mkNotes = mkNoteMapper.selectById(Long.valueOf(getNote.getNoteId()));
+        MkNotes mkNotes = mkNoteMapper.getOneNotes(Long.valueOf(getNote.getNoteId()));
         if (!mkNotes.getUserId().equals(Long.valueOf(mkJwtUtil.getUserIdFromHeader()))) {
             return ResponseResult.error("身份存在错误");
         }
         return ResponseResult.success("查询成功!", mkNotes);
+    }
+
+    @Override
+    public ResponseResult deleteOneNote(GetOneNoteDTO getNote) {
+        MkNotes mkNotes = mkNoteMapper.selectOne(Wrappers.<MkNotes>query()
+                .select("deleted", "user_id")
+                .eq("id", Long.valueOf(getNote.getNoteId())));
+        Long userId = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
+        if (!userId.equals(mkNotes.getUserId())) {
+            return ResponseResult.error("身份存在错误");
+        }
+        mkNoteMapper.deleteById(Long.valueOf(getNote.getNoteId()));
+        return ResponseResult.success("删除成功！");
+    }
+
+    @Override
+    public ResponseResult recoverOneNote(GetOneNoteDTO getNote) {
+        mkNoteMapper.recoverOneNote(Long.valueOf(getNote.getNoteId()));
+        MkNotes mkNotes = mkNoteMapper.selectOne(Wrappers.<MkNotes>query()
+                .select("user_id")
+                .eq("id", Long.valueOf(getNote.getNoteId())));
+        Long userId = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
+        if (!userId.equals(mkNotes.getUserId())) {
+            return ResponseResult.error("身份存在错误");
+        }
+        return ResponseResult.success("恢复成功！");
     }
 }

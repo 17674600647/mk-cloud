@@ -14,5 +14,8 @@ import com.glm.entity.dto.NoteDTO;
 public interface NoteService {
     public ResponseResult saveNote(NoteDTO noteDTO);
     public ResponseResult getPageNotes(GetNotesDTO getNote );
+    public ResponseResult getPageDeleteNotes(GetNotesDTO getNote );
     public ResponseResult getOneNotes(GetOneNoteDTO getNote );
+    public ResponseResult deleteOneNote(GetOneNoteDTO getNote );
+    public ResponseResult recoverOneNote(GetOneNoteDTO getNote );
 }

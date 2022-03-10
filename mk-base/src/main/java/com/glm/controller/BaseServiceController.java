@@ -36,20 +36,36 @@ public class BaseServiceController {
     @PostMapping("/save/note")
     @ApiOperation("保存/更新文章")
     public ResponseResult saveNote(@RequestBody @Valid NoteDTO noteDTO) {
-        return  noteService.saveNote(noteDTO);
+        return noteService.saveNote(noteDTO);
     }
 
     @PostMapping("/get/notes")
     @ApiOperation("分页查询文章列表")
     public ResponseResult getNote(@RequestBody @Valid GetNotesDTO getNote) {
-        return  noteService.getPageNotes(getNote);
+        return noteService.getPageNotes(getNote);
     }
+
     @PostMapping("/get/one/note")
     @ApiOperation("查询一个文章")
     public ResponseResult getANote(@RequestBody @Valid GetOneNoteDTO getOneNoteDTO) {
-        return  noteService.getOneNotes(getOneNoteDTO);
+        return noteService.getOneNotes(getOneNoteDTO);
     }
 
+    @PostMapping("/delete/one/note")
+    @ApiOperation("删除文章")
+    public ResponseResult deleteNote(@RequestBody @Valid GetOneNoteDTO deleteNote) {
+        return noteService.deleteOneNote(deleteNote);
+    }
 
+    @PostMapping("/get/delete/notes")
+    @ApiOperation("分页查询被删除的文章列表")
+    public ResponseResult getDeleteNotesApi(@RequestBody @Valid GetNotesDTO getDeleteNote) {
+        return noteService.getPageDeleteNotes(getDeleteNote);
+    }
 
+    @PostMapping("/recover/one/note")
+    @ApiOperation("恢复删除的文章")
+    public ResponseResult recoverNote(@RequestBody @Valid GetOneNoteDTO deleteNote) {
+        return noteService.recoverOneNote(deleteNote);
+    }
 }
