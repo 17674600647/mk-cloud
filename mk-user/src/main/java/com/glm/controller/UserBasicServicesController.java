@@ -41,4 +41,9 @@ public class UserBasicServicesController {
         log.info(registerDTO);
         return mkUserService.register(registerDTO);
     }
+    @PostMapping("/get/info")
+    @ApiOperation("用户注册")
+    public ResponseResult getInfo() {
+        return mkUserService.getInfo();
+    }
 }

@@ -21,4 +21,6 @@ public interface MkUserService {
     public ResponseResult register(RegisterDTO loginDTO);
 
     public ResponseResult verifyToken(AuthDto author);
+
+    public ResponseResult getInfo();
 }

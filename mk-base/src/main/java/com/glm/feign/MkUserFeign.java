@@ -14,5 +14,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @FeignClient(value = "mk-user", fallback = MkUserFallBack.class)
 public interface MkUserFeign {
     @RequestMapping("/auth/rpc/tokenCheck")
-    public String verifyTokenRPC( @RequestBody String token);
+    public String verifyTokenRPC(@RequestBody String token);
 }

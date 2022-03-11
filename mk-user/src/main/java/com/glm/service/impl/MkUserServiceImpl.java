@@ -16,6 +16,7 @@ import com.glm.entity.dto.RegisterDTO;
 import com.glm.entity.pojo.MkUser;
 import com.glm.entity.vo.LoginVO;
 
+import com.glm.entity.vo.UserInfoVO;
 import com.glm.mapper.MkUserMapper;
 import com.glm.service.MkUserService;
 import com.glm.utils.MkJwtUtil;
@@ -126,5 +127,13 @@ public class MkUserServiceImpl implements MkUserService {
             return ResponseResult.success("登陆状态未失效");
         }
         return ResponseResult.error("登陆状态失效");
+    }
+
+    @Override
+    public ResponseResult getInfo() {
+        String idFromHeader = mkjwtUtil.getUserIdFromHeader();
+        MkUser mkUser = userMapper.selectById(Long.valueOf(idFromHeader));
+        UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
+        return ResponseResult.success("查询成功~", fromMkUser);
     }
 }

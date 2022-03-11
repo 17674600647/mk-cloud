@@ -39,6 +39,8 @@ public class MkUser {
     private String describe;
     @TableField(value = "nickname")
     private String nickName;
+    @TableField(value = "pic_url")
+    private String picUrl;
 
     //信息脱敏
     public void desensitized(){
