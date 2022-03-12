@@ -7,6 +7,8 @@ import com.glm.entity.dto.RegisterDTO;
 import com.glm.entity.vo.LoginVO;
 import com.glm.entity.vo.RegisterVO;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author ：lzy
@@ -23,4 +25,6 @@ public interface MkUserService {
     public ResponseResult verifyToken(AuthDto author);
 
     public ResponseResult getInfo();
+
+    public ResponseResult changeUrl(MultipartFile file);
 }

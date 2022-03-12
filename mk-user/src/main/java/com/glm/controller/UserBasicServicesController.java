@@ -5,6 +5,7 @@ import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.LoginDTO;
 import com.glm.entity.dto.RegisterDTO;
 import com.glm.exception.ControllerFieldAspect;
+import com.glm.feign.MkOtherFeign;
 import com.glm.service.MkUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author ：lzy
@@ -41,9 +44,16 @@ public class UserBasicServicesController {
         log.info(registerDTO);
         return mkUserService.register(registerDTO);
     }
+
     @PostMapping("/get/info")
     @ApiOperation("用户注册")
     public ResponseResult getInfo() {
         return mkUserService.getInfo();
+    }
+
+    @PostMapping("/change/picUrl")
+    @ApiOperation("修改用户头像")
+    public ResponseResult changeUrl(@RequestParam MultipartFile file) {
+        return mkUserService.changeUrl(file);
     }
 }

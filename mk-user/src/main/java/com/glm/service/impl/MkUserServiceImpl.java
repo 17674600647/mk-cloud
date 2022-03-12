@@ -17,14 +17,17 @@ import com.glm.entity.pojo.MkUser;
 import com.glm.entity.vo.LoginVO;
 
 import com.glm.entity.vo.UserInfoVO;
+import com.glm.feign.MkOtherFeign;
 import com.glm.mapper.MkUserMapper;
 import com.glm.service.MkUserService;
 import com.glm.utils.MkJwtUtil;
 import com.glm.utils.RedisUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +58,9 @@ public class MkUserServiceImpl implements MkUserService {
     RedisUtil redisUtil;
     @Autowired
     MkJwtUtil mkjwtUtil;
+
+    @Autowired
+    MkOtherFeign mkOtherFeign;
 
     @Override
     public ResponseResult login(LoginDTO loginDTO) {
@@ -135,5 +141,12 @@ public class MkUserServiceImpl implements MkUserService {
         MkUser mkUser = userMapper.selectById(Long.valueOf(idFromHeader));
         UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
         return ResponseResult.success("查询成功~", fromMkUser);
+    }
+
+    @Override
+    public ResponseResult changeUrl(MultipartFile file) {
+        ResponseResult responseResult = mkOtherFeign.picUpload(file);
+
+        return responseResult;
     }
 }

@@ -1,4 +1,4 @@
-package com.glm.feign.fallback;
+package com.glm.feign;
 
 import com.glm.entity.ResponseResult;
 import com.glm.feign.MkUserFeign;
