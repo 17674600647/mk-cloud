@@ -7,6 +7,8 @@ import cn.hutool.crypto.SecureUtil;
 
 import cn.hutool.json.JSONUtil;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.glm.config.exception.TestException;
 import com.glm.entity.FinalString;
 import com.glm.entity.ResponseResult;
@@ -27,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -146,7 +149,21 @@ public class MkUserServiceImpl implements MkUserService {
     @Override
     public ResponseResult changeUrl(MultipartFile file) {
         ResponseResult responseResult = mkOtherFeign.picUpload(file);
-
-        return responseResult;
+        if (!responseResult.getCode().equals("200")) {
+            return ResponseResult.error("头像上传失败" + responseResult.getMessage());
+        }
+        if (StringUtils.isEmpty(responseResult.getData())) {
+            return ResponseResult.error("头像上传失败");
+        }
+        String id = mkjwtUtil.getUserIdFromHeader();
+        UpdateWrapper<MkUser> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", Long.valueOf(id));
+        MkUser mkUser = new MkUser();
+        mkUser.setPicUrl(responseResult.getData().toString());
+        int update = userMapper.update(mkUser, updateWrapper);
+        if (update == 0) {
+            return ResponseResult.error("头像上传失败");
+        }
+        return ResponseResult.success("上传成功~！");
     }
 }

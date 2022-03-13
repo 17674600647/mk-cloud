@@ -34,7 +34,7 @@ public class MkUser {
     @TableField(value = "email")
     private String email;
     @TableField(value = "age")
-    private int age;
+    private Integer age;
     @TableField(value = "describe")
     private String describe;
     @TableField(value = "nickname")

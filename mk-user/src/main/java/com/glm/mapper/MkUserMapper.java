@@ -3,6 +3,8 @@ package com.glm.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.glm.entity.pojo.MkUser;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * @author ：lzy
@@ -12,4 +14,5 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface MkUserMapper extends BaseMapper<MkUser> {
+
 }

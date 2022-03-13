@@ -53,7 +53,7 @@ public class UserBasicServicesController {
 
     @PostMapping("/change/picUrl")
     @ApiOperation("修改用户头像")
-    public ResponseResult changeUrl(@RequestParam MultipartFile file) {
+    public ResponseResult changeUrl(@RequestParam("file") MultipartFile file) {
         return mkUserService.changeUrl(file);
     }
 }
