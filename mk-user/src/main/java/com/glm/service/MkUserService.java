@@ -4,6 +4,7 @@ import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.AuthDto;
 import com.glm.entity.dto.LoginDTO;
 import com.glm.entity.dto.RegisterDTO;
+import com.glm.entity.dto.UpdateDTO;
 import com.glm.entity.vo.LoginVO;
 import com.glm.entity.vo.RegisterVO;
 import org.springframework.stereotype.Service;
@@ -27,4 +28,6 @@ public interface MkUserService {
     public ResponseResult getInfo();
 
     public ResponseResult changeUrl(MultipartFile file);
+
+    public ResponseResult updateUserInfoS(UpdateDTO updateDTO);
 }

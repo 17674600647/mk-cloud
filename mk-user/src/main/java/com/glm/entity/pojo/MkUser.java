@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.Date;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("mk_user")
+@Accessors(chain = true)
 public class MkUser {
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;

@@ -1,5 +1,6 @@
 package com.glm.service.impl;
 
+import cn.hutool.crypto.SecureUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTHeader;
 import cn.hutool.jwt.JWTUtil;
@@ -52,5 +53,10 @@ public class MkUserServiceImplTest {
     @Test
     public void test2() {
         System.out.println((String) redisUtil.get("mkcloud_1044204713@qq.com"));
+    }
+
+    @Test
+    public void test3() {
+        System.out.println(SecureUtil.md5("1234567899"));
     }
 }

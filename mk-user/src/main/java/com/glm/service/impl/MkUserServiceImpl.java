@@ -8,6 +8,7 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONUtil;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.glm.config.exception.TestException;
 import com.glm.entity.FinalString;
@@ -15,6 +16,7 @@ import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.AuthDto;
 import com.glm.entity.dto.LoginDTO;
 import com.glm.entity.dto.RegisterDTO;
+import com.glm.entity.dto.UpdateDTO;
 import com.glm.entity.pojo.MkUser;
 import com.glm.entity.vo.LoginVO;
 
@@ -165,5 +167,26 @@ public class MkUserServiceImpl implements MkUserService {
             return ResponseResult.error("头像上传失败");
         }
         return ResponseResult.success("上传成功~！");
+    }
+
+    @Override
+    public ResponseResult updateUserInfoS(UpdateDTO updateDTO) {
+        if (updateDTO.getFlag() == 5) {
+            String md5OldPassword = SecureUtil.md5(updateDTO.getOldPassword());
+            QueryWrapper<MkUser> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("password").eq("id", Long.valueOf(mkjwtUtil.getUserIdFromHeader()));
+            MkUser mkUser = userMapper.selectOne(queryWrapper);
+            if (!mkUser.getPassword().equals(md5OldPassword)){
+                return ResponseResult.error("信息更新失败,原密码不正确");
+            }
+        }
+        MkUser mkUser = updateDTO.getMkUser();
+        UpdateWrapper<MkUser> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", Long.valueOf(mkjwtUtil.getUserIdFromHeader()));
+        int update = userMapper.update(mkUser, updateWrapper);
+        if (update == 0) {
+            return ResponseResult.error("信息更新失败");
+        }
+        return ResponseResult.success("信息成功~！");
     }
 }

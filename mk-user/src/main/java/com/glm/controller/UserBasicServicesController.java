@@ -4,6 +4,7 @@ import com.glm.config.exception.TestException;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.LoginDTO;
 import com.glm.entity.dto.RegisterDTO;
+import com.glm.entity.dto.UpdateDTO;
 import com.glm.exception.ControllerFieldAspect;
 import com.glm.feign.MkOtherFeign;
 import com.glm.service.MkUserService;
@@ -56,4 +57,11 @@ public class UserBasicServicesController {
     public ResponseResult changeUrl(@RequestParam("file") MultipartFile file) {
         return mkUserService.changeUrl(file);
     }
+
+    @PostMapping("/update/info")
+    @ApiOperation("更新用户信息")
+    public ResponseResult updateUserInfo(@RequestBody @Valid UpdateDTO updateDTO) {
+        return mkUserService.updateUserInfoS(updateDTO);
+    }
 }
+
