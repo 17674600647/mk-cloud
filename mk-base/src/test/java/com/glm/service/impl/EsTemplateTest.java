@@ -151,7 +151,7 @@ public class EsTemplateTest {
 
     @Test
     public void test67() {
-        SearchHits<MkNotes> search = esUtil.searchNotesOfTitleAndContent("费桂湘",0,5);
+        SearchHits<MkNotes> search = esUtil.searchNotesOfTitle("我的");
         for (SearchHit<MkNotes> hits : search) {
             System.out.println("-----------开始----------");
             System.out.println("内容" + hits.getContent());
@@ -168,10 +168,10 @@ public class EsTemplateTest {
 
     @Test
     public void test8() {
-        SearchHits<MkNotes> search = esUtil.searchNotesOfTitle("费桂湘");
+        SearchHits<MkNotes> search = esUtil.searchNotesOfTitle3("我的");
         for (SearchHit<MkNotes> hits : search) {
             System.out.println("-----------开始----------");
-            System.out.println("内容" + hits.getContent());
+            System.out.println("标题" + hits.getContent().getTitle());
             System.out.println("ID" + hits.getId());
             List<Object> sortValues = hits.getSortValues();
             sortValues.forEach(System.out::println);

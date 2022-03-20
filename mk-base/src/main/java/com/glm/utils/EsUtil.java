@@ -55,6 +55,7 @@ public class EsUtil {
                 .build();
         return elasticsearchRestTemplate.search(queryBuilder, MkNotes.class);
     }
+
     /*根据标题搜索分享的文章*/
     public SearchHits<MkNotes> searchNotesOfTitle(String text) {
         BoolQueryBuilder bqb = QueryBuilders.boolQuery();
@@ -64,6 +65,20 @@ public class EsUtil {
                 .withQuery(QueryBuilders.multiMatchQuery(text, MKNOTE_TITLE))
                 .withFilter(bqb)
                 .withHighlightFields(new HighlightBuilder.Field(MKNOTE_TITLE))
+                .build();
+        return elasticsearchRestTemplate.search(queryBuilder, MkNotes.class);
+    }
+
+    /*根据标题搜索分享的文章*/
+    public SearchHits<MkNotes> searchNotesOfTitle3(String text) {
+        String preTag = "<font color='#dd4b39'>";//google的色值
+        String postTag = "</font>";
+        BoolQueryBuilder bqb = QueryBuilders.boolQuery();
+        bqb.must(QueryBuilders.matchPhraseQuery(MKNOTE_SHARE_STATUS, MKNOTE_SHARED));
+        bqb.must(QueryBuilders.matchPhraseQuery(MKNOTE_DELETED, MKNOTE_DELETED_FALSE));
+        NativeSearchQuery queryBuilder = new NativeSearchQueryBuilder()
+                .withQuery(QueryBuilders.multiMatchQuery(text, MKNOTE_TITLE))
+                .withHighlightFields(new HighlightBuilder.Field(MKNOTE_TITLE).preTags(preTag).postTags(postTag))
                 .build();
         return elasticsearchRestTemplate.search(queryBuilder, MkNotes.class);
     }
