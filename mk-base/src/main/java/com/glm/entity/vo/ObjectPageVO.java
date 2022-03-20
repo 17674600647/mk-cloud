@@ -11,9 +11,16 @@ import java.util.List;
 
 /**
  * @program: mk-cloud
- * @description: 分页查询VO
+ * @description:
  * @author: lizhiyong
- * @create: 2022-03-05 17:44
+ * @create: 2022-03-20 10:45
  **/
 
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Accessors(chain = true)
+public class ObjectPageVO<T> {
+    private Long total;
+    private List<T> noteList = Collections.emptyList();
+}

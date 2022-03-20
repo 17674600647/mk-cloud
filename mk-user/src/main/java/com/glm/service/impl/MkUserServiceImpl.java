@@ -51,7 +51,7 @@ public class MkUserServiceImpl implements MkUserService {
     private MkUserMapper userMapper;
 
     private final String TokenPre = "TOKEN_";
-    private final int TokenOverTime = 3600;
+    private final int TokenOverTime = 36000;
 
     @Value("${Email.checkCode}")
     String redisPrefix;

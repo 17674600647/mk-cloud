@@ -4,6 +4,7 @@ import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.GetNotesDTO;
 import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.NoteDTO;
+import com.glm.entity.dto.SearchNotesDTO;
 
 /**
  * @program: mk-cloud
@@ -18,4 +19,7 @@ public interface NoteService {
     public ResponseResult getOneNotes(GetOneNoteDTO getNote );
     public ResponseResult deleteOneNote(GetOneNoteDTO getNote );
     public ResponseResult recoverOneNote(GetOneNoteDTO getNote );
+    public ResponseResult getSharedNotesApi(GetNotesDTO getNote );
+    public ResponseResult toShareNote(GetOneNoteDTO getNote );
+    public ResponseResult toDishareNote(GetOneNoteDTO getNote );
 }

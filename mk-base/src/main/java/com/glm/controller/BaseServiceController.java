@@ -68,4 +68,21 @@ public class BaseServiceController {
     public ResponseResult recoverNote(@RequestBody @Valid GetOneNoteDTO deleteNote) {
         return noteService.recoverOneNote(deleteNote);
     }
+
+    @PostMapping("/get/shared/notes")
+    @ApiOperation("分页查询/审核中/分享的文章列表")
+    public ResponseResult getSharedNotesApi(@RequestBody @Valid GetNotesDTO getDeleteNote) {
+        return noteService.getSharedNotesApi(getDeleteNote);
+    }
+    @PostMapping("/to/dishare/note")
+    @ApiOperation("取消分享文章")
+    public ResponseResult toDishareNote(@RequestBody @Valid GetOneNoteDTO getDisShareNote) {
+        return noteService.toDishareNote(getDisShareNote);
+    }
+
+    @PostMapping("/to/share/note")
+    @ApiOperation("分享一个文章")
+    public ResponseResult toShareNote(@RequestBody @Valid GetOneNoteDTO toShareNote) {
+        return noteService.toShareNote(toShareNote);
+    }
 }

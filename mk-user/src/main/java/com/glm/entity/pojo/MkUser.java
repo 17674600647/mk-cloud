@@ -2,6 +2,7 @@ package com.glm.entity.pojo;
 
 import cn.hutool.core.util.DesensitizedUtil;
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,8 +28,10 @@ public class MkUser {
     private String username;
     @TableField(value = "password")
     private String password;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
     @TableLogic(value = "deleted")
@@ -45,8 +48,8 @@ public class MkUser {
     private String picUrl;
 
     //信息脱敏
-    public void desensitized(){
-        this.password=null;
+    public void desensitized() {
+        this.password = null;
         this.email = DesensitizedUtil.email(this.email);
     }
 
