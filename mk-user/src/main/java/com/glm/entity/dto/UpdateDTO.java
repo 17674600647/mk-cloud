@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @program: mk-cloud
  * @description: 用户信息更新用
@@ -26,6 +28,7 @@ public class UpdateDTO {
     private String password;
     private String oldPassword;
     private String checkPass;
+    @NotNull
     private Integer flag;
 
     public MkUser getMkUser() {

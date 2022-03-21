@@ -59,6 +59,7 @@ public class NoteServiceImpl implements NoteService {
                 return ResponseResult.error("身份验证失败!");
             }
             mkNotes.setId(Long.valueOf(noteDTO.getNoteId()));
+            mkNotes.setShareStatus(MKNOTE_DISHARE);
             UpdateWrapper<MkNotes> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("user_id", userId)
                     .eq("id", Long.valueOf(noteDTO.getNoteId()));

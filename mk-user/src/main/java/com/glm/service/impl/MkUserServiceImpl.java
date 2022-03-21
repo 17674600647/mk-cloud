@@ -192,9 +192,11 @@ public class MkUserServiceImpl implements MkUserService {
             }
         }
         MkUser mkUser = updateDTO.getMkUser();
+        String idFromHeader = mkjwtUtil.getUserIdFromHeader();
         UpdateWrapper<MkUser> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", Long.valueOf(mkjwtUtil.getUserIdFromHeader()));
+        updateWrapper.eq("id", Long.valueOf(idFromHeader));
         int update = userMapper.update(mkUser, updateWrapper);
+        redisUtil.delete(TOKEN_USER_INFO_ + idFromHeader);
         if (update == 0) {
             return ResponseResult.error("信息更新失败");
         }
