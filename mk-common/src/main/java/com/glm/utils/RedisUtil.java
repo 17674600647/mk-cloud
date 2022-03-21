@@ -1,5 +1,6 @@
 package com.glm.utils;
 
+import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -83,6 +84,19 @@ public class RedisUtil {
     public void set(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
     }
+
+    /**
+     * 将值放入缓存
+     *
+     * @param key   键
+     * @param value 值
+     * @return true成功 false 失败 缓存
+     */
+    public void cacheData(String key, Object value) {
+        redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value));
+    }
+
+
  
     /**
      * 将值放入缓存并设置时间

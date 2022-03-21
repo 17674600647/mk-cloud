@@ -17,6 +17,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.elasticsearch.annotations.DateFormat.date;
+
 /**
  * @program: mk-cloud
  * @description: 笔记同步类
@@ -36,10 +38,10 @@ public class MkNotesScheduling {
     @Autowired
     MkSchedulingMapper mkSchedulingMapper;
 
-    public static final Integer MKNOTE_TO_ES = 100;
+    public static final Integer MKNOTE_TO_ES = 1;
 
     /*每10分钟执行一次*/
-    @Scheduled(fixedDelay=600000)
+    @Scheduled(fixedDelay = 600000)
     public void updateDataToES() {
         log.info("-----------开始执行定时更新文章的任务------------------");
         QueryWrapper<MkScheduling> mkSchedulingQueryWrapper = Wrappers.<MkScheduling>query()
@@ -47,27 +49,32 @@ public class MkNotesScheduling {
                 .eq("task_number", MKNOTE_TO_ES);
         List<MkScheduling> mkSchedulings = mkSchedulingMapper.selectList(mkSchedulingQueryWrapper);
         Date lastUpdateDate = null;
-        if (mkSchedulings == null) {
-            lastUpdateDate = new Date();
+        Date nowUpdateTime = null;
+        if (mkSchedulings.size() == 0) {
+            //如果没有任务，就设置为项目创建日期
+            lastUpdateDate = new Date(1639584000000L);
+            nowUpdateTime = new Date();
         } else {
             for (MkScheduling mkScheduling : mkSchedulings) {
                 if (mkScheduling.getCreateTime() != null && mkScheduling.getOverTime() != null) {
                     lastUpdateDate = mkScheduling.getCreateTime();
+                    nowUpdateTime = new Date();
                     break;
                 }
             }
         }
-        Date nowUpdateTime = new Date();
         //查找晚于这个更新时间的
         QueryWrapper<MkNotes> queryWrapper = new QueryWrapper<MkNotes>();
         queryWrapper.between("update_time", lastUpdateDate, nowUpdateTime);
         List<MkNotes> mkNotes = mkNotesMapper.selectList(queryWrapper);
         List<Long> longs = mkNotes.stream().map(MkNotes::getId).collect(Collectors.toList());
         esMkNotesRepository.saveAll(mkNotes);
-        MkScheduling mkSchedulingX=new MkScheduling();
+        MkScheduling mkSchedulingX = new MkScheduling();
         mkSchedulingX.setCreateTime(nowUpdateTime);
         mkSchedulingX.setOverTime(new Date());
         mkSchedulingX.setTaskNumber(MKNOTE_TO_ES);
+        mkSchedulingX.setUpdateNumber(longs.size());
+        mkSchedulingX.setStartTime(lastUpdateDate);
         mkSchedulingMapper.insert(mkSchedulingX);
         log.info("本次更新的文章ID" + longs);
         log.info("-----------定时任务结束------------------");

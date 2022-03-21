@@ -22,9 +22,15 @@ public class MkScheduling implements Serializable {
     @TableField(value = "task_number")
     private Integer taskNumber;
 
+    @TableField(value = "update_number")
+    private Integer updateNumber;
+
     @TableField(value = "create_time")
     private Date createTime;
 
     @TableField(value = "over_time")
     private Date overTime;
+
+    @TableField(value = "start_time")
+    private Date startTime;
 }

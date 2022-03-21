@@ -64,6 +64,7 @@ public class EsUtil {
         NativeSearchQuery queryBuilder = new NativeSearchQueryBuilder()
                 .withQuery(QueryBuilders.multiMatchQuery(text, MKNOTE_TITLE))
                 .withFilter(bqb)
+                .withPageable(PageRequest.of(0, 8))
                 .withHighlightFields(new HighlightBuilder.Field(MKNOTE_TITLE))
                 .build();
         return elasticsearchRestTemplate.search(queryBuilder, MkNotes.class);

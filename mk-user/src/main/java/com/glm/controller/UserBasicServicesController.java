@@ -47,7 +47,7 @@ public class UserBasicServicesController {
     }
 
     @PostMapping("/get/info")
-    @ApiOperation("用户注册")
+    @ApiOperation("获取用户信息")
     public ResponseResult getInfo() {
         return mkUserService.getInfo();
     }

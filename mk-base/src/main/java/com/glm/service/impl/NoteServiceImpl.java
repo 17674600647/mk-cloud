@@ -54,6 +54,10 @@ public class NoteServiceImpl implements NoteService {
             }
             return ResponseResult.error("保存失败!");
         } else {
+            MkNotes oneNotes = mkNoteMapper.getOneNotes(Long.valueOf(noteDTO.getNoteId()));
+            if (!oneNotes.getUserId().equals(userId)){
+                return ResponseResult.error("身份验证失败!");
+            }
             mkNotes.setId(Long.valueOf(noteDTO.getNoteId()));
             UpdateWrapper<MkNotes> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("user_id", userId)
@@ -94,7 +98,7 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public ResponseResult getOneNotes(GetOneNoteDTO getNote) {
         MkNotes mkNotes = mkNoteMapper.getOneNotes(Long.valueOf(getNote.getNoteId()));
-        if (!mkNotes.getUserId().equals(Long.valueOf(mkJwtUtil.getUserIdFromHeader()))) {
+        if (!mkNotes.getUserId().equals(Long.valueOf(mkJwtUtil.getUserIdFromHeader()))&&mkNotes.getShareStatus()==-1) {
             return ResponseResult.error("身份存在错误");
         }
         return ResponseResult.success("查询成功!", mkNotes);

@@ -5,6 +5,7 @@ import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 
+
 import cn.hutool.json.JSONUtil;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
@@ -26,9 +27,10 @@ import com.glm.mapper.MkUserMapper;
 import com.glm.service.MkUserService;
 import com.glm.utils.MkJwtUtil;
 import com.glm.utils.RedisUtil;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -51,6 +53,8 @@ public class MkUserServiceImpl implements MkUserService {
     private MkUserMapper userMapper;
 
     private final String TokenPre = "TOKEN_";
+    private final String TOKEN_USER_INFO_ = "token_user_info_";
+
     private final int TokenOverTime = 36000;
 
     @Value("${Email.checkCode}")
@@ -143,8 +147,15 @@ public class MkUserServiceImpl implements MkUserService {
     @Override
     public ResponseResult getInfo() {
         String idFromHeader = mkjwtUtil.getUserIdFromHeader();
+        String jsonInfo = (String) redisUtil.get(TOKEN_USER_INFO_ + idFromHeader);
+        if (jsonInfo != null) {
+            UserInfoVO redisInfo = JSONUtil.toBean(jsonInfo, UserInfoVO.class);
+            return ResponseResult.success("查询成功~", redisInfo);
+        }
         MkUser mkUser = userMapper.selectById(Long.valueOf(idFromHeader));
         UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
+        //保存用户信息到redis
+        redisUtil.cacheData(TOKEN_USER_INFO_ + idFromHeader, fromMkUser);
         return ResponseResult.success("查询成功~", fromMkUser);
     }
 
@@ -176,7 +187,7 @@ public class MkUserServiceImpl implements MkUserService {
             QueryWrapper<MkUser> queryWrapper = new QueryWrapper<>();
             queryWrapper.select("password").eq("id", Long.valueOf(mkjwtUtil.getUserIdFromHeader()));
             MkUser mkUser = userMapper.selectOne(queryWrapper);
-            if (!mkUser.getPassword().equals(md5OldPassword)){
+            if (!mkUser.getPassword().equals(md5OldPassword)) {
                 return ResponseResult.error("信息更新失败,原密码不正确");
             }
         }
