@@ -6,22 +6,21 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 
 
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.glm.config.exception.TestException;
+import com.glm.config.exception.MessageException;
 import com.glm.entity.FinalString;
 import com.glm.entity.ResponseResult;
-import com.glm.entity.dto.AuthDto;
-import com.glm.entity.dto.LoginDTO;
-import com.glm.entity.dto.RegisterDTO;
-import com.glm.entity.dto.UpdateDTO;
+import com.glm.entity.dto.*;
 import com.glm.entity.pojo.MkUser;
 import com.glm.entity.vo.LoginVO;
 
 import com.glm.entity.vo.UserInfoVO;
+import com.glm.feign.MkBaseFeign;
 import com.glm.feign.MkOtherFeign;
 import com.glm.mapper.MkUserMapper;
 import com.glm.service.MkUserService;
@@ -54,6 +53,7 @@ public class MkUserServiceImpl implements MkUserService {
 
     private final String TokenPre = "TOKEN_";
     private final String TOKEN_USER_INFO_ = "token_user_info_";
+    private final String TOKEN_USER_INFO_OUT = "token_user_info_out";
 
     private final int TokenOverTime = 36000;
 
@@ -70,6 +70,9 @@ public class MkUserServiceImpl implements MkUserService {
 
     @Autowired
     MkOtherFeign mkOtherFeign;
+
+    @Autowired
+    MkBaseFeign mkBaseFeign;
 
     @Override
     public ResponseResult login(LoginDTO loginDTO) {
@@ -201,5 +204,29 @@ public class MkUserServiceImpl implements MkUserService {
             return ResponseResult.error("信息更新失败");
         }
         return ResponseResult.success("信息成功~！");
+    }
+
+    @Override
+    public ResponseResult getMkUserInfo(GetOneNoteDTO getNote) {
+        try {
+            ResponseResult note = mkBaseFeign.getANote(getNote);
+            JSONObject jsonObject = JSONUtil.parseObj(note.getData());
+            //获取用户ID
+            Long userId = (Long)jsonObject.get("userId");
+            String jsonInfo = (String) redisUtil.get(TOKEN_USER_INFO_OUT + userId);
+            if (jsonInfo != null) {
+                UserInfoVO redisInfo = JSONUtil.toBean(jsonInfo, UserInfoVO.class);
+                return ResponseResult.success("查询成功~", redisInfo);
+            }
+            MkUser mkUser = userMapper.selectById(userId);
+            UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
+            //保存用户信息到redis
+            redisUtil.cacheData(TOKEN_USER_INFO_OUT + userId, fromMkUser);
+            return ResponseResult.success("查询成功~", fromMkUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MessageException("查询文章用户数据出错啦~");
+        }
+
     }
 }

@@ -2,6 +2,7 @@ package com.glm.controller;
 
 import com.glm.config.exception.TestException;
 import com.glm.entity.ResponseResult;
+import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.LoginDTO;
 import com.glm.entity.dto.RegisterDTO;
 import com.glm.entity.dto.UpdateDTO;
@@ -62,6 +63,12 @@ public class UserBasicServicesController {
     @ApiOperation("更新用户信息")
     public ResponseResult updateUserInfo(@RequestBody @Valid UpdateDTO updateDTO) {
         return mkUserService.updateUserInfoS(updateDTO);
+    }
+
+    @PostMapping("/get/mknote/info")
+    @ApiOperation("获取文章的用户信息")
+    public ResponseResult getMkNoteInfo(@RequestBody @Valid GetOneNoteDTO getNote) {
+        return mkUserService.getMkUserInfo(getNote);
     }
 }
 

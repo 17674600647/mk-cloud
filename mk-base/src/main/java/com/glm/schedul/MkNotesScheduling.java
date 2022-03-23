@@ -57,7 +57,8 @@ public class MkNotesScheduling {
         } else {
             for (MkScheduling mkScheduling : mkSchedulings) {
                 if (mkScheduling.getCreateTime() != null && mkScheduling.getOverTime() != null) {
-                    lastUpdateDate = mkScheduling.getCreateTime();
+                    //为了容错，多检测一秒
+                    lastUpdateDate = new Date(mkScheduling.getCreateTime().getTime()-1000);
                     nowUpdateTime = new Date();
                     break;
                 }

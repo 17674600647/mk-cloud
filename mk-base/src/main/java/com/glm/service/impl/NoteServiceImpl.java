@@ -21,6 +21,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @program: mk-cloud
@@ -99,7 +100,8 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public ResponseResult getOneNotes(GetOneNoteDTO getNote) {
         MkNotes mkNotes = mkNoteMapper.getOneNotes(Long.valueOf(getNote.getNoteId()));
-        if (!mkNotes.getUserId().equals(Long.valueOf(mkJwtUtil.getUserIdFromHeader()))&&mkNotes.getShareStatus()==-1) {
+        Long aLong = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
+        if (!mkNotes.getUserId().equals(aLong)&&mkNotes.getShareStatus()==-1) {
             return ResponseResult.error("身份存在错误");
         }
         return ResponseResult.success("查询成功!", mkNotes);
@@ -118,6 +120,7 @@ public class NoteServiceImpl implements NoteService {
         return ResponseResult.success("删除成功！");
     }
 
+    @Transactional
     @Override
     public ResponseResult recoverOneNote(GetOneNoteDTO getNote) {
         mkNoteMapper.recoverOneNote(Long.valueOf(getNote.getNoteId()));
@@ -126,7 +129,7 @@ public class NoteServiceImpl implements NoteService {
                 .eq("id", Long.valueOf(getNote.getNoteId())));
         Long userId = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
         if (!userId.equals(mkNotes.getUserId())) {
-            return ResponseResult.error("身份存在错误");
+            throw new MessageException("身份存在错误");
         }
         return ResponseResult.success("恢复成功！");
     }
@@ -171,5 +174,12 @@ public class NoteServiceImpl implements NoteService {
         UpdateWrapper<MkNotes> updateWrapper = new UpdateWrapper<MkNotes>();
         updateWrapper.eq("id", Long.valueOf(getNote.getNoteId()));
         mkNoteMapper.update(mkNotes, updateWrapper);
+    }
+
+
+    @Override
+    public ResponseResult getOneNotesRpc(GetOneNoteDTO getNote) {
+        MkNotes mkNotes = mkNoteMapper.getOneNotes(Long.valueOf(getNote.getNoteId()));
+        return ResponseResult.success("查询成功!", mkNotes);
     }
 }
