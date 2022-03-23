@@ -158,7 +158,7 @@ public class MkUserServiceImpl implements MkUserService {
         MkUser mkUser = userMapper.selectById(Long.valueOf(idFromHeader));
         UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
         //保存用户信息到redis
-        redisUtil.cacheData(TOKEN_USER_INFO_ + idFromHeader, fromMkUser);
+        redisUtil.cacheData(TOKEN_USER_INFO_ + idFromHeader, fromMkUser,600L);
         return ResponseResult.success("查询成功~", fromMkUser);
     }
 
@@ -180,6 +180,7 @@ public class MkUserServiceImpl implements MkUserService {
         if (update == 0) {
             return ResponseResult.error("头像上传失败");
         }
+        redisUtil.delete(TOKEN_USER_INFO_ + id);
         return ResponseResult.success("上传成功~！");
     }
 
@@ -200,6 +201,7 @@ public class MkUserServiceImpl implements MkUserService {
         updateWrapper.eq("id", Long.valueOf(idFromHeader));
         int update = userMapper.update(mkUser, updateWrapper);
         redisUtil.delete(TOKEN_USER_INFO_ + idFromHeader);
+        redisUtil.delete(TOKEN_USER_INFO_OUT + idFromHeader);
         if (update == 0) {
             return ResponseResult.error("信息更新失败");
         }
@@ -212,7 +214,7 @@ public class MkUserServiceImpl implements MkUserService {
             ResponseResult note = mkBaseFeign.getANote(getNote);
             JSONObject jsonObject = JSONUtil.parseObj(note.getData());
             //获取用户ID
-            Long userId = (Long)jsonObject.get("userId");
+            Long userId = (Long) jsonObject.get("userId");
             String jsonInfo = (String) redisUtil.get(TOKEN_USER_INFO_OUT + userId);
             if (jsonInfo != null) {
                 UserInfoVO redisInfo = JSONUtil.toBean(jsonInfo, UserInfoVO.class);
@@ -221,7 +223,7 @@ public class MkUserServiceImpl implements MkUserService {
             MkUser mkUser = userMapper.selectById(userId);
             UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
             //保存用户信息到redis
-            redisUtil.cacheData(TOKEN_USER_INFO_OUT + userId, fromMkUser);
+            redisUtil.cacheData(TOKEN_USER_INFO_OUT + userId, fromMkUser,600L);
             return ResponseResult.success("查询成功~", fromMkUser);
         } catch (Exception e) {
             e.printStackTrace();

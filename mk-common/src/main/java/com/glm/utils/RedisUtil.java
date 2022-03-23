@@ -85,6 +85,8 @@ public class RedisUtil {
         redisTemplate.opsForValue().set(key, value);
     }
 
+
+
     /**
      * 将值放入缓存
      *
@@ -92,8 +94,8 @@ public class RedisUtil {
      * @param value 值
      * @return true成功 false 失败 缓存
      */
-    public void cacheData(String key, Object value) {
-        redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value));
+    public void cacheData(String key, Object value,Long time) {
+        redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value),time, TimeUnit.SECONDS);
     }
     /**
      * 删除key
