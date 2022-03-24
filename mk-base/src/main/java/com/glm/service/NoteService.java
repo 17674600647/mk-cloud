@@ -22,5 +22,8 @@ public interface NoteService {
     public ResponseResult recoverOneNote(GetOneNoteDTO getNote );
     public ResponseResult getSharedNotesApi(GetNotesDTO getNote );
     public ResponseResult toShareNote(GetOneNoteDTO getNote );
+    public ResponseResult toCollectNote(GetOneNoteDTO getNote );
+    public ResponseResult toDisCollect(GetOneNoteDTO getNote );
     public ResponseResult toDishareNote(GetOneNoteDTO getNote );
+    public ResponseResult queryCollectNotes(GetNotesDTO getNote );
 }

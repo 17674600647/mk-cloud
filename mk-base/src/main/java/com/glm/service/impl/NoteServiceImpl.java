@@ -11,9 +11,11 @@ import com.glm.entity.dto.GetNotesDTO;
 import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.NoteDTO;
 
+import com.glm.entity.pojo.MkCollect;
 import com.glm.entity.pojo.MkNotes;
 
 import com.glm.entity.vo.ObjectPageVO;
+import com.glm.mapper.MkCollectMapper;
 import com.glm.mapper.MkNoteMapper;
 import com.glm.service.NoteService;
 import com.glm.utils.MkJwtUtil;
@@ -22,6 +24,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @program: mk-cloud
@@ -37,6 +42,10 @@ public class NoteServiceImpl implements NoteService {
     MkJwtUtil mkJwtUtil;
     @Autowired
     MkNoteMapper mkNoteMapper;
+
+    @Autowired
+    MkCollectMapper mkCollectmapper;
+
     public static Short MKNOTE_SHARED = 1;
     public static Short MKNOTE_CHECK = 0;
     public static Short MKNOTE_DISHARE = -1;
@@ -56,7 +65,7 @@ public class NoteServiceImpl implements NoteService {
             return ResponseResult.error("保存失败!");
         } else {
             MkNotes oneNotes = mkNoteMapper.getOneNotes(Long.valueOf(noteDTO.getNoteId()));
-            if (!oneNotes.getUserId().equals(userId)){
+            if (!oneNotes.getUserId().equals(userId)) {
                 return ResponseResult.error("身份验证失败!");
             }
             mkNotes.setId(Long.valueOf(noteDTO.getNoteId()));
@@ -101,7 +110,7 @@ public class NoteServiceImpl implements NoteService {
     public ResponseResult getOneNotes(GetOneNoteDTO getNote) {
         MkNotes mkNotes = mkNoteMapper.getOneNotes(Long.valueOf(getNote.getNoteId()));
         Long aLong = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
-        if (!mkNotes.getUserId().equals(aLong)&&mkNotes.getShareStatus()==-1) {
+        if (!mkNotes.getUserId().equals(aLong) && mkNotes.getShareStatus() == -1) {
             return ResponseResult.error("身份存在错误");
         }
         return ResponseResult.success("查询成功!", mkNotes);
@@ -139,7 +148,7 @@ public class NoteServiceImpl implements NoteService {
         IPage<MkNotes> notePage = new Page<MkNotes>(getNote.getCurrentPage(), getNote.getPageSize());
         QueryWrapper<MkNotes> queryWrapper = Wrappers.<MkNotes>query()
                 .orderByDesc("create_time")
-                .select("id", "title", "create_time", "update_time", "classic", "user_id","share_status")
+                .select("id", "title", "create_time", "update_time", "classic", "user_id", "share_status")
                 .eq("user_id", Long.valueOf(mkJwtUtil.getUserIdFromHeader()))
                 .and((wrapper) -> {
                     wrapper.eq("share_status", MKNOTE_SHARED)
@@ -157,9 +166,60 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
+    public ResponseResult toCollectNote(GetOneNoteDTO getNote) {
+        String userIdFromHeader = mkJwtUtil.getUserIdFromHeader();
+        QueryWrapper<MkCollect> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", Long.valueOf(userIdFromHeader))
+                .eq("note_id", Long.valueOf(getNote.getNoteId()));
+        List<MkCollect> mkCollects = mkCollectmapper.selectList(queryWrapper);
+        if (mkCollects.size() > 0) {
+            throw new MessageException("请勿重复收藏~");
+        }
+        mkCollectmapper.insert(new MkCollect().setNoteId(Long.valueOf(getNote.getNoteId())).setUserId(Long.valueOf(userIdFromHeader)));
+        return ResponseResult.success("收藏成功~");
+    }
+
+    @Override
+    public ResponseResult toDisCollect(GetOneNoteDTO getNote) {
+        String userIdFromHeader = mkJwtUtil.getUserIdFromHeader();
+        QueryWrapper<MkCollect> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", Long.valueOf(userIdFromHeader));
+        queryWrapper.eq("note_id", Long.valueOf(getNote.getNoteId()));
+        List<MkCollect> mkCollects = mkCollectmapper.selectList(queryWrapper);
+        if (mkCollects.size() < 1) {
+            throw new MessageException("收藏记录不存在");
+        }
+        mkCollectmapper.deleteCollect(Long.valueOf(userIdFromHeader), Long.valueOf(getNote.getNoteId()));
+        return ResponseResult.success("取消收藏成功~");
+    }
+
+    @Override
     public ResponseResult toDishareNote(GetOneNoteDTO getNote) {
         changeShareStatus(getNote, MKNOTE_DISHARE);
         return ResponseResult.success("已删除分享");
+    }
+
+    @Override
+    public ResponseResult queryCollectNotes(GetNotesDTO getNote) {
+        String user_id = mkJwtUtil.getUserIdFromHeader();
+        IPage<MkNotes> notePage = new Page<MkNotes>(getNote.getCurrentPage(), getNote.getPageSize());
+        QueryWrapper<MkCollect> queryCollectNotes = new QueryWrapper<>();
+        queryCollectNotes.eq("user_id", Long.valueOf(user_id));
+        List<MkCollect> mkCollects = mkCollectmapper.selectList(queryCollectNotes);
+        if (mkCollects.size() < 1) {
+            return ResponseResult.success("暂无数据!");
+        }
+        //查询出所有的noteId
+        List<Long> noteIds = mkCollects.stream().map(MkCollect::getNoteId).collect(Collectors.toList());
+        QueryWrapper<MkNotes> queryNotes = Wrappers.<MkNotes>query()
+                .select("id", "title", "create_time", "update_time")
+                .eq("share_status", 1)
+                .in("id", noteIds);
+        IPage<MkNotes> mkNotesIPage = mkNoteMapper.selectPage(notePage, queryNotes);
+        ObjectPageVO<MkNotes> notesPageVO = new ObjectPageVO<MkNotes>();
+        notesPageVO.setTotal(mkNotesIPage.getTotal());
+        notesPageVO.setNoteList(mkNotesIPage.getRecords());
+        return ResponseResult.success("查询成功!", notesPageVO);
     }
 
     public void changeShareStatus(GetOneNoteDTO getNote, Short status) {

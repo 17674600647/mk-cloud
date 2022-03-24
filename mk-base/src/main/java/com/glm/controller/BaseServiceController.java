@@ -85,4 +85,22 @@ public class BaseServiceController {
     public ResponseResult toShareNote(@RequestBody @Valid GetOneNoteDTO toShareNote) {
         return noteService.toShareNote(toShareNote);
     }
+
+    @PostMapping("/to/collect/note")
+    @ApiOperation("收藏一个文章")
+    public ResponseResult toCollect(@RequestBody @Valid GetOneNoteDTO CollectNote) {
+        return noteService.toCollectNote(CollectNote);
+    }
+
+    @PostMapping("/to/disCollect/note")
+    @ApiOperation("取消收藏一个文章")
+    public ResponseResult toDisCollect(@RequestBody @Valid GetOneNoteDTO disCollectNote) {
+        return noteService.toDisCollect(disCollectNote);
+    }
+
+    @PostMapping("/query/collect/notes")
+    @ApiOperation("查询收藏的文章")
+    public ResponseResult queryCollectNotes(@RequestBody @Valid  GetNotesDTO getNote) {
+        return noteService.queryCollectNotes(getNote);
+    }
 }
