@@ -6,7 +6,6 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 
 
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 
@@ -16,12 +15,16 @@ import com.glm.config.exception.MessageException;
 import com.glm.entity.FinalString;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.*;
+import com.glm.entity.enmu.TokenPrefixEnum;
+import com.glm.entity.enmu.UserAuthEnum;
 import com.glm.entity.pojo.MkUser;
+import com.glm.entity.pojo.MkUserAuth;
 import com.glm.entity.vo.LoginVO;
 
 import com.glm.entity.vo.UserInfoVO;
 import com.glm.feign.MkBaseFeign;
 import com.glm.feign.MkOtherFeign;
+import com.glm.mapper.MkUserAuthMapper;
 import com.glm.mapper.MkUserMapper;
 import com.glm.service.MkUserService;
 import com.glm.utils.MkJwtUtil;
@@ -51,10 +54,6 @@ public class MkUserServiceImpl implements MkUserService {
     @Autowired
     private MkUserMapper userMapper;
 
-    private final String TokenPre = "TOKEN_";
-    private final String TOKEN_USER_INFO_ = "token_user_info_";
-    private final String TOKEN_USER_INFO_OUT = "token_user_info_out";
-
     private final int TokenOverTime = 36000;
 
     @Value("${Email.checkCode}")
@@ -67,6 +66,9 @@ public class MkUserServiceImpl implements MkUserService {
     RedisUtil redisUtil;
     @Autowired
     MkJwtUtil mkjwtUtil;
+
+    @Autowired
+    MkUserAuthMapper mkUserAuthMapper;
 
     @Autowired
     MkOtherFeign mkOtherFeign;
@@ -92,6 +94,8 @@ public class MkUserServiceImpl implements MkUserService {
         Map<String, String> jwtMap = new HashMap<String, String>();
         jwtMap.put(FinalString.USERID, mkUser.getId().toString());
         jwtMap.put("nickName", mkUser.getNickName());
+        List<Integer> userAuthMark = mkUserAuthMapper.findUserAuthMark(mkUser.getId());
+        jwtMap.put("authMark", String.valueOf(userAuthMark.get(0)));
         String token = mkjwtUtil.createToken(jwtMap);
         //用户信息base64位编码保存
         String userInfoBase64 = Base64.encode(JSONUtil.toJsonStr(mkUser));
@@ -99,7 +103,7 @@ public class MkUserServiceImpl implements MkUserService {
         loginVO.setToken(token);
         loginVO.setAuthInfo(userInfoBase64);
         //保存到Redis,过期时间设置为1小时
-        redisUtil.set(TokenPre + mkUser.getId(), token, TokenOverTime);
+        redisUtil.set(TokenPrefixEnum.TokenPre.getPrefix() + mkUser.getId(), token, TokenOverTime);
         return ResponseResult.success("登录成功", loginVO);
     }
 
@@ -125,6 +129,8 @@ public class MkUserServiceImpl implements MkUserService {
         int insert = 0;
         try {
             insert = userMapper.insert(registerMkUser);
+            MkUserAuth mkUserAuth = new MkUserAuth().setAuthId(Long.valueOf(UserAuthEnum.NORMAL_USER.getMark())).setUserId(registerMkUser.getId());
+           mkUserAuthMapper.insert(mkUserAuth);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.error("注册失败~,账号或者邮箱存在~");
@@ -139,9 +145,9 @@ public class MkUserServiceImpl implements MkUserService {
     @Override
     public ResponseResult verifyToken(AuthDto authDto) {
         String userId = mkjwtUtil.getUserIdByToken(authDto.getToken().trim());
-        if (redisUtil.get(TokenPre + userId) != null) {
+        if (redisUtil.get(TokenPrefixEnum.TokenPre.getPrefix() + userId) != null) {
             //重新设置时间
-            redisUtil.expire(TokenPre + userId, TokenOverTime);
+            redisUtil.expire(TokenPrefixEnum.TokenPre.getPrefix() + userId, TokenOverTime);
             return ResponseResult.success("登陆状态未失效");
         }
         return ResponseResult.error("登陆状态失效");
@@ -150,7 +156,7 @@ public class MkUserServiceImpl implements MkUserService {
     @Override
     public ResponseResult getInfo() {
         String idFromHeader = mkjwtUtil.getUserIdFromHeader();
-        String jsonInfo = (String) redisUtil.get(TOKEN_USER_INFO_ + idFromHeader);
+        String jsonInfo = (String) redisUtil.get(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + idFromHeader);
         if (jsonInfo != null) {
             UserInfoVO redisInfo = JSONUtil.toBean(jsonInfo, UserInfoVO.class);
             return ResponseResult.success("查询成功~", redisInfo);
@@ -158,7 +164,7 @@ public class MkUserServiceImpl implements MkUserService {
         MkUser mkUser = userMapper.selectById(Long.valueOf(idFromHeader));
         UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
         //保存用户信息到redis
-        redisUtil.cacheData(TOKEN_USER_INFO_ + idFromHeader, fromMkUser,600L);
+        redisUtil.cacheData(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + idFromHeader, fromMkUser, 600L);
         return ResponseResult.success("查询成功~", fromMkUser);
     }
 
@@ -180,7 +186,7 @@ public class MkUserServiceImpl implements MkUserService {
         if (update == 0) {
             return ResponseResult.error("头像上传失败");
         }
-        redisUtil.delete(TOKEN_USER_INFO_ + id);
+        redisUtil.delete(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + id);
         return ResponseResult.success("上传成功~！");
     }
 
@@ -200,8 +206,8 @@ public class MkUserServiceImpl implements MkUserService {
         UpdateWrapper<MkUser> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", Long.valueOf(idFromHeader));
         int update = userMapper.update(mkUser, updateWrapper);
-        redisUtil.delete(TOKEN_USER_INFO_ + idFromHeader);
-        redisUtil.delete(TOKEN_USER_INFO_OUT + idFromHeader);
+        redisUtil.delete(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + idFromHeader);
+        redisUtil.delete(TokenPrefixEnum.TOKEN_USER_INFO_OUT.getPrefix() + idFromHeader);
         if (update == 0) {
             return ResponseResult.error("信息更新失败");
         }
@@ -215,7 +221,7 @@ public class MkUserServiceImpl implements MkUserService {
             JSONObject jsonObject = JSONUtil.parseObj(note.getData());
             //获取用户ID
             Long userId = (Long) jsonObject.get("userId");
-            String jsonInfo = (String) redisUtil.get(TOKEN_USER_INFO_OUT + userId);
+            String jsonInfo = (String) redisUtil.get(TokenPrefixEnum.TOKEN_USER_INFO_OUT.getPrefix() + userId);
             if (jsonInfo != null) {
                 UserInfoVO redisInfo = JSONUtil.toBean(jsonInfo, UserInfoVO.class);
                 return ResponseResult.success("查询成功~", redisInfo);
@@ -223,7 +229,7 @@ public class MkUserServiceImpl implements MkUserService {
             MkUser mkUser = userMapper.selectById(userId);
             UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
             //保存用户信息到redis
-            redisUtil.cacheData(TOKEN_USER_INFO_OUT + userId, fromMkUser,600L);
+            redisUtil.cacheData(TokenPrefixEnum.TOKEN_USER_INFO_OUT.getPrefix() + userId, fromMkUser, 600L);
             return ResponseResult.success("查询成功~", fromMkUser);
         } catch (Exception e) {
             e.printStackTrace();

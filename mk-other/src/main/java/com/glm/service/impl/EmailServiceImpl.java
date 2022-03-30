@@ -45,7 +45,7 @@ public class EmailServiceImpl implements EmailService {
         String send = MailUtil.send(email, "码克荡云笔记~", contentBuilder.toString(), true);
         log.info("验证码:" + randomCheckCode);
         if (ObjectUtils.isNotNull(send) && send.length() > 0) {
-            redisUtil.set(redisPrefix + email, randomCheckCode, 300);
+            redisUtil.set(redisPrefix + email, randomCheckCode, 60);
             return ResponseResult.success(send);
         }
         return ResponseResult.error("发送失败~");
