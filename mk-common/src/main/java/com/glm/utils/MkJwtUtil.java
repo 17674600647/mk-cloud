@@ -2,14 +2,10 @@ package com.glm.utils;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.exceptions.ValidateException;
 import cn.hutool.jwt.JWT;
-import cn.hutool.jwt.JWTUtil;
-import cn.hutool.jwt.JWTValidator;
-import com.glm.entity.FinalString;
+import com.glm.config.exception.MessageException;
+import com.glm.entity.constant.StringConstant;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -51,7 +47,18 @@ public class MkJwtUtil {
     //获取用户ID
     public String getUserIdByToken(String token) {
         Map<String, String> userIdMap = getUserInfoByToken(token);
-        return userIdMap.get(FinalString.USERID);
+        if (userIdMap!=null&&userIdMap.get(StringConstant.USERID) != null) {
+            return userIdMap.get(StringConstant.USERID);
+        }
+        throw new MessageException("无法获取UerId出错~");
+    }
+
+    public Integer getUserRoleByToken(String token) {
+        Map<String, String> userIdMap = getUserInfoByToken(token);
+        if (userIdMap!=null&&userIdMap.get(StringConstant.USER_AUTH) != null) {
+            return Integer.valueOf(userIdMap.get(StringConstant.USER_AUTH));
+        }
+        throw new MessageException("权限出错~");
     }
 
 
@@ -67,6 +74,16 @@ public class MkJwtUtil {
         String token = request.getHeader("token");
         if (token != null) {
             return getUserIdByToken(token);
+        }
+        return null;
+    }
+
+    //从请求头中获取
+    public Integer getUserRoleFromHeader() {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        String token = request.getHeader("token");
+        if (token != null) {
+            return getUserRoleByToken(token);
         }
         return null;
     }

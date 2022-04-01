@@ -1,4 +1,4 @@
-package com.glm.entity;
+package com.glm.entity.constant;
 
 /**
  * @program: mk-cloud
@@ -8,6 +8,7 @@ package com.glm.entity;
  **/
 
 
-public  class FinalString {
+public  class StringConstant {
    public static final String USERID = "userId";
+   public static final String USER_AUTH= "role";
 }

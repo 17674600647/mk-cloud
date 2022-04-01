@@ -19,6 +19,6 @@ public class MkAuth {
     private Long id;
     @TableField(value = "descript")
     private String descript;
-    @TableField(value = "mark")
-    private Short mark;
+    @TableField(value = "role")
+    private Short role;
 }

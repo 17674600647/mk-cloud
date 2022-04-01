@@ -44,5 +44,11 @@ public class UserAuthController {
         return mkUserService.verifyToken(authDto).getCode();
     }
 
+    @RequestMapping("/get/user/role")
+    @ApiOperation("用户Token身份验证,RPC接口")
+    public ResponseResult getUserRole(@RequestBody(required = false)String token) {
+        return mkUserService.getUserRole(token);
+    }
+
 
 }

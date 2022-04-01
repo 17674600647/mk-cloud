@@ -12,8 +12,8 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.glm.config.exception.MessageException;
-import com.glm.entity.FinalString;
 import com.glm.entity.ResponseResult;
+import com.glm.entity.constant.StringConstant;
 import com.glm.entity.dto.*;
 import com.glm.entity.enmu.TokenPrefixEnum;
 import com.glm.entity.enmu.UserAuthEnum;
@@ -22,6 +22,7 @@ import com.glm.entity.pojo.MkUserAuth;
 import com.glm.entity.vo.LoginVO;
 
 import com.glm.entity.vo.UserInfoVO;
+import com.glm.entity.vo.UserRoleVO;
 import com.glm.feign.MkBaseFeign;
 import com.glm.feign.MkOtherFeign;
 import com.glm.mapper.MkUserAuthMapper;
@@ -92,10 +93,10 @@ public class MkUserServiceImpl implements MkUserService {
         MkUser mkUser = mkUsers.get(0);
         mkUser.desensitized();
         Map<String, String> jwtMap = new HashMap<String, String>();
-        jwtMap.put(FinalString.USERID, mkUser.getId().toString());
+        jwtMap.put(StringConstant.USERID, mkUser.getId().toString());
         jwtMap.put("nickName", mkUser.getNickName());
-        List<Integer> userAuthMark = mkUserAuthMapper.findUserAuthMark(mkUser.getId());
-        jwtMap.put("authMark", String.valueOf(userAuthMark.get(0)));
+        List<Integer> userAuthRole = mkUserAuthMapper.findUserAuthMark(mkUser.getId());
+        jwtMap.put(StringConstant.USER_AUTH, String.valueOf(userAuthRole.get(0)));
         String token = mkjwtUtil.createToken(jwtMap);
         //用户信息base64位编码保存
         String userInfoBase64 = Base64.encode(JSONUtil.toJsonStr(mkUser));
@@ -130,7 +131,7 @@ public class MkUserServiceImpl implements MkUserService {
         try {
             insert = userMapper.insert(registerMkUser);
             MkUserAuth mkUserAuth = new MkUserAuth().setAuthId(Long.valueOf(UserAuthEnum.NORMAL_USER.getMark())).setUserId(registerMkUser.getId());
-           mkUserAuthMapper.insert(mkUserAuth);
+            mkUserAuthMapper.insert(mkUserAuth);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.error("注册失败~,账号或者邮箱存在~");
@@ -236,5 +237,19 @@ public class MkUserServiceImpl implements MkUserService {
             throw new MessageException("查询文章用户数据出错啦~");
         }
 
+    }
+
+    @Override
+    public ResponseResult getUserRole(String token) {
+        Integer roleFromHeader =null;
+        if (token!=null){
+            roleFromHeader= mkjwtUtil.getUserRoleByToken(token);
+        }else {
+            roleFromHeader=mkjwtUtil.getUserRoleFromHeader();
+        }
+        if (Objects.isNull(roleFromHeader)) {
+            throw new MessageException("获取权限失败");
+        }
+        return ResponseResult.success("获取成功！", new UserRoleVO(roleFromHeader));
     }
 }

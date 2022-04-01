@@ -28,5 +28,6 @@ public interface MkUserService {
 
     public ResponseResult updateUserInfoS(UpdateDTO updateDTO);
 
-    ResponseResult getMkUserInfo(GetOneNoteDTO getNote);
+    public ResponseResult getMkUserInfo(GetOneNoteDTO getNote);
+    public ResponseResult getUserRole(String token );
 }

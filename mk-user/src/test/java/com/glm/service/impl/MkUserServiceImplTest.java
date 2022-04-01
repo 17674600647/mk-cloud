@@ -4,6 +4,7 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTHeader;
 import cn.hutool.jwt.JWTUtil;
+import com.glm.utils.MkJwtUtil;
 import com.glm.utils.RedisUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import java.util.Map;
 public class MkUserServiceImplTest {
     @Autowired
     RedisUtil redisUtil;
+    @Autowired
+    MkJwtUtil mkJwtUtil;
 
     @Test
     public void JWTTest() {
@@ -58,5 +61,10 @@ public class MkUserServiceImplTest {
     @Test
     public void test3() {
         System.out.println(SecureUtil.md5("1234567899"));
+    }
+
+    @Test
+    public void test4() {
+        mkJwtUtil.getUserRoleFromHeader();
     }
 }
