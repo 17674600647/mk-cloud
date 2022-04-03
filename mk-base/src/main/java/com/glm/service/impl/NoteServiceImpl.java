@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Log4j2
+@Transactional
 public class NoteServiceImpl implements NoteService {
     @Autowired
     MkJwtUtil mkJwtUtil;
@@ -96,10 +97,12 @@ public class NoteServiceImpl implements NoteService {
         return ResponseResult.success("查询成功!", notesPageVO);
     }
 
+
+
     @Override
     public ResponseResult getPageDeleteNotes(GetNotesDTO getNote) {
         IPage<MkNotes> notePage = new Page<MkNotes>(getNote.getCurrentPage(), getNote.getPageSize());
-        IPage<MkNotes> mkNotesIPage = mkNoteMapper.getDeleteNotes(notePage, Long.valueOf(mkJwtUtil.getUserIdFromHeader()));
+        IPage<MkNotes> mkNotesIPage = mkNoteMapper.getDeleteNotesById(notePage, Long.valueOf(mkJwtUtil.getUserIdFromHeader()));
         ObjectPageVO<MkNotes> notesPageVO = new ObjectPageVO<MkNotes>();
         notesPageVO.setTotal(mkNotesIPage.getTotal());
         notesPageVO.setNoteList(mkNotesIPage.getRecords());
@@ -129,10 +132,12 @@ public class NoteServiceImpl implements NoteService {
         return ResponseResult.success("删除成功！");
     }
 
-    @Transactional
+
+
+
     @Override
     public ResponseResult recoverOneNote(GetOneNoteDTO getNote) {
-        mkNoteMapper.recoverOneNote(Long.valueOf(getNote.getNoteId()));
+        mkNoteMapper.recoverOneNoteById(Long.valueOf(getNote.getNoteId()));
         MkNotes mkNotes = mkNoteMapper.selectOne(Wrappers.<MkNotes>query()
                 .select("user_id")
                 .eq("id", Long.valueOf(getNote.getNoteId())));

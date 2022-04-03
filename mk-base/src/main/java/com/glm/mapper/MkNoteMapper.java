@@ -17,11 +17,18 @@ public interface MkNoteMapper extends BaseMapper<MkNotes> {
     @Select("SELECT id,title,create_time,update_time,classic,user_id FROM mk_notes " +
             "WHERE deleted = 1 " +
             "AND user_id = #{user_id} ORDER BY create_time DESC")
-    public IPage<MkNotes> getDeleteNotes(IPage<MkNotes> notes,@Param("user_id") Long user_id);
+    public IPage<MkNotes> getDeleteNotesById(IPage<MkNotes> notes, @Param("user_id") Long user_id);
 
-    @Select("SELECT id,content,title,create_time,update_time,classic,user_id FROM mk_notes WHERE id = #{id}" )
+    @Select("SELECT id,title,create_time,update_time,classic,user_id FROM mk_notes " +
+            "WHERE deleted = 1 " +
+            "ORDER BY create_time DESC")
+    public IPage<MkNotes> getAllDeleteNotes(IPage<MkNotes> notes);
+
+    @Select("SELECT id,content,title,create_time,update_time,classic,user_id FROM mk_notes WHERE id = #{id}")
     public MkNotes getOneNotes(@Param("id") Long id);
 
     @Update("update mk_notes set deleted =0 where id=#{id}")
-    public void recoverOneNote(@Param("id") Long id);
+    public void recoverOneNoteById(@Param("id") Long id);
+
+
 }

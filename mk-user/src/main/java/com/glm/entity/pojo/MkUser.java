@@ -44,6 +44,8 @@ public class MkUser {
     private String describe;
     @TableField(value = "nickname")
     private String nickName;
+    @TableField(value = "status")
+    private Short status;
     @TableField(value = "pic_url")
     private String picUrl;
 

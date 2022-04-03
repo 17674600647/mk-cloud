@@ -24,10 +24,17 @@ public interface MkUserService {
 
     public ResponseResult getInfo();
 
+    public ResponseResult getInfoById(String userId);
+
     public ResponseResult changeUrl(MultipartFile file);
 
     public ResponseResult updateUserInfoS(UpdateDTO updateDTO);
 
     public ResponseResult getMkUserInfo(GetOneNoteDTO getNote);
-    public ResponseResult getUserRole(String token );
+
+    public ResponseResult getUserRole(String token);
+
+    public ResponseResult getAllUsersByStatus(UserPageByStatusDTO userPageByStatus);
+
+    public ResponseResult updateUserStatus(UpdateUserStatesDTO updateUserStatesDTO);
 }

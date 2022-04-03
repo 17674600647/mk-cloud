@@ -1,25 +1,17 @@
 package com.glm.controller;
 
-import com.glm.config.exception.TestException;
 import com.glm.entity.ResponseResult;
-import com.glm.entity.dto.GetOneNoteDTO;
-import com.glm.entity.dto.LoginDTO;
-import com.glm.entity.dto.RegisterDTO;
-import com.glm.entity.dto.UpdateDTO;
-import com.glm.exception.ControllerFieldAspect;
-import com.glm.feign.MkOtherFeign;
+import com.glm.entity.dto.*;
 import com.glm.service.MkUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * @author ：lzy
@@ -51,6 +43,12 @@ public class UserBasicServicesController {
     @ApiOperation("获取用户信息")
     public ResponseResult getInfo() {
         return mkUserService.getInfo();
+    }
+
+    @PostMapping("/get/info/by/id")
+    @ApiOperation("根据获取用户信息")
+    public ResponseResult getByInfo(@RequestBody QueryUserInfoByIdDTO queryUserInfoByIdDTO) {
+        return mkUserService.getInfoById(queryUserInfoByIdDTO.getUserId());
     }
 
     @PostMapping("/change/picUrl")

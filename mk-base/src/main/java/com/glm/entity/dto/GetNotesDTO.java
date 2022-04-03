@@ -21,4 +21,6 @@ public class GetNotesDTO {
     private Integer pageSize;
     @NotNull(message = "查询的currentPage不能为空")
     private Integer currentPage;
+
+    private Integer shareStatus;
 }

@@ -11,7 +11,10 @@ import cn.hutool.json.JSONUtil;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.glm.config.exception.MessageException;
+import com.glm.entity.PageVO;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.constant.StringConstant;
 import com.glm.entity.dto.*;
@@ -22,6 +25,7 @@ import com.glm.entity.pojo.MkUserAuth;
 import com.glm.entity.vo.LoginVO;
 
 import com.glm.entity.vo.UserInfoVO;
+import com.glm.entity.vo.UserByStatusVO;
 import com.glm.entity.vo.UserRoleVO;
 import com.glm.feign.MkBaseFeign;
 import com.glm.feign.MkOtherFeign;
@@ -39,10 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author ：lzy
@@ -170,6 +171,20 @@ public class MkUserServiceImpl implements MkUserService {
     }
 
     @Override
+    public ResponseResult getInfoById(String userId) {
+        String jsonInfo = (String) redisUtil.get(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + userId);
+        if (jsonInfo != null) {
+            UserInfoVO redisInfo = JSONUtil.toBean(jsonInfo, UserInfoVO.class);
+            return ResponseResult.success("查询成功~", redisInfo);
+        }
+        MkUser mkUser = userMapper.selectById(Long.valueOf(userId));
+        UserInfoVO fromMkUser = UserInfoVO.getInfoFromMkUser(mkUser);
+        //保存用户信息到redis
+        redisUtil.cacheData(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + userId, fromMkUser, 600L);
+        return ResponseResult.success("查询成功~", fromMkUser);
+    }
+
+    @Override
     public ResponseResult changeUrl(MultipartFile file) {
         ResponseResult responseResult = mkOtherFeign.picUpload(file);
         if (!responseResult.getCode().equals("200")) {
@@ -241,15 +256,44 @@ public class MkUserServiceImpl implements MkUserService {
 
     @Override
     public ResponseResult getUserRole(String token) {
-        Integer roleFromHeader =null;
-        if (token!=null){
-            roleFromHeader= mkjwtUtil.getUserRoleByToken(token);
-        }else {
-            roleFromHeader=mkjwtUtil.getUserRoleFromHeader();
+        Integer roleFromHeader = null;
+        if (token != null) {
+            roleFromHeader = mkjwtUtil.getUserRoleByToken(token);
+        } else {
+            roleFromHeader = mkjwtUtil.getUserRoleFromHeader();
         }
         if (Objects.isNull(roleFromHeader)) {
             throw new MessageException("获取权限失败");
         }
         return ResponseResult.success("获取成功！", new UserRoleVO(roleFromHeader));
+    }
+
+    @Override
+    public ResponseResult getAllUsersByStatus(UserPageByStatusDTO userPageByStatus) {
+        QueryWrapper<MkUser> queryWrapper = new QueryWrapper<>();
+        if (!userPageByStatus.getStatus().equals(2)) {
+            queryWrapper.eq("status", userPageByStatus.getStatus());
+        }
+        IPage page = new Page(userPageByStatus.getCurrentPage(), userPageByStatus.getPageSize());
+        IPage page1 = userMapper.selectPage(page, queryWrapper);
+        List<MkUser> mkUsers = page1.getRecords();
+        List<UserByStatusVO> userByStatusVOList = new ArrayList<>();
+        for (MkUser mkUser : mkUsers) {
+            userByStatusVOList.add(new UserByStatusVO().convertByMkUser(mkUser));
+        }
+        return ResponseResult.success(new PageVO<UserByStatusVO>(page1.getTotal(), userByStatusVOList));
+    }
+
+    @Override
+    public ResponseResult updateUserStatus(UpdateUserStatesDTO updateUserStatesDTO) {
+        UpdateWrapper updateWrapper = new UpdateWrapper();
+        updateWrapper.eq("id", Long.valueOf(updateUserStatesDTO.getUserId()));
+        MkUser mkUser = new MkUser();
+        mkUser.setStatus(updateUserStatesDTO.getStatus().shortValue());
+        int update = userMapper.update(mkUser, updateWrapper);
+        if (update!=1){
+            return ResponseResult.error("修改失败！");
+        }
+        return ResponseResult.success("修改成功！");
     }
 }

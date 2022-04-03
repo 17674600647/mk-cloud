@@ -45,6 +45,8 @@ public class ResponseResult<T> {
         this.data = data;
     }
 
+
+
     public static ResponseResult<Object> error(String msg) {
         return new ResponseResult<Object>(ResponseCodeEnum.ERROR.getCode(), msg);
     }
@@ -64,6 +66,10 @@ public class ResponseResult<T> {
     public static ResponseResult<Object> success(String msg, Object data) {
         return new ResponseResult<Object>(ResponseCodeEnum.SUCCESS.getCode(), msg, data);
     }
+    public static ResponseResult<Object> success( Object data) {
+        return new ResponseResult<Object>(ResponseCodeEnum.SUCCESS.getCode(), ResponseCodeEnum.SUCCESS.getMsg(), data);
+    }
+
 
 
     @Override

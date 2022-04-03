@@ -4,9 +4,11 @@ import cn.hutool.core.util.DesensitizedUtil;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.glm.entity.pojo.MkUser;
+import com.glm.utils.MyBeanUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -37,13 +39,8 @@ public class UserInfoVO implements Serializable {
 
     public static UserInfoVO getInfoFromMkUser(MkUser mkUser) {
         UserInfoVO userInfoVO = new UserInfoVO();
-        userInfoVO.email = mkUser.getEmail();
+        MyBeanUtils.copyProperties(mkUser,userInfoVO);
         userInfoVO.desensitized();
-        userInfoVO.nickName = mkUser.getNickName();
-        userInfoVO.describe = mkUser.getDescribe();
-        userInfoVO.age = mkUser.getAge();
-        userInfoVO.createTime = mkUser.getCreateTime();
-        userInfoVO.picUrl = mkUser.getPicUrl();
         return userInfoVO;
     }
 }
