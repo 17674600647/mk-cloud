@@ -6,18 +6,26 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.glm.entity.NoteStatusEnum;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.GetNotesDTO;
 import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.UpdateNoteStatusDTO;
+import com.glm.entity.pojo.DataTakeOver;
 import com.glm.entity.pojo.MkNotes;
+import com.glm.entity.vo.DataReportVO;
 import com.glm.entity.vo.ObjectPageVO;
 import com.glm.mapper.MkNoteMapper;
 import com.glm.service.AdminNoteService;
 import com.glm.utils.MkJwtUtil;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -72,9 +80,33 @@ public class AdminNoteServiceImpl implements AdminNoteService {
         MkNotes mkNotes = new MkNotes();
         mkNotes.setShareStatus(updateNoteStatus.getShareStatus().shortValue());
         int update = mkNoteMapper.update(mkNotes, updateWrapper);
-        if (update==1){
+        if (update == 1) {
             return ResponseResult.success("更新成功");
         }
         return ResponseResult.error("更新失败");
+    }
+
+    @Override
+    public ResponseResult queryNoteDataReport() {
+        List<DataTakeOver> dataTakeOvers = mkNoteMapper.queryDataReport();
+        Map<Integer, Integer> collect = dataTakeOvers.stream().collect(Collectors.toMap(x -> x.getShareStatus(), y -> y.getTotal()));
+        Double total = dataTakeOvers.stream().mapToDouble(DataTakeOver::getTotal).sum();
+        DataReportVO dataReportVO = new DataReportVO();
+        double notReview = 0;
+        if (collect.get(NoteStatusEnum.AUDIT_PENDING.getStatus()) != null) {
+            notReview = (collect.get(NoteStatusEnum.AUDIT_PENDING.getStatus()).doubleValue() / total) * 100;
+        }
+        double notePassed = 0;
+        if (collect.get(NoteStatusEnum.AUDIT_FAIL.getStatus()) != null) {
+            notePassed = (collect.get(NoteStatusEnum.AUDIT_FAIL.getStatus()).doubleValue() / total) * 100;
+        }
+        double notPassRate = 0;
+        if (collect.get(NoteStatusEnum.AUDIT_FAIL.getStatus()) != null && collect.get(NoteStatusEnum.AUDIT_FAIL.getStatus()) != null) {
+            notPassRate = (collect.get(NoteStatusEnum.AUDIT_FAIL.getStatus()).doubleValue() / (collect.get(NoteStatusEnum.AUDIT_FAIL.getStatus()).doubleValue() + collect.get(NoteStatusEnum.AUDIT_SUCCESS.getStatus()).doubleValue())) * 100;
+        }
+        dataReportVO.setNotReviewed((int) notReview);
+        dataReportVO.setNotPassed((int) notePassed);
+        dataReportVO.setNotPassedRate((int) notPassRate);
+        return ResponseResult.success(dataReportVO);
     }
 }

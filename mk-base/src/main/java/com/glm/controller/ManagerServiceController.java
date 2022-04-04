@@ -46,4 +46,10 @@ public class ManagerServiceController {
         return adminNoteService.adminSetNoteStatus(noteStatusDTO);
     }
 
+    @PostMapping("/query/note/data/report")
+    @ApiOperation("查询文章数据")
+    public ResponseResult queryNoteDataReport() {
+        return adminNoteService.queryNoteDataReport();
+    }
+
 }

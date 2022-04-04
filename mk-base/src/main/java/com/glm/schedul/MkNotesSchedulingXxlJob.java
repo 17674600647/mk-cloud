@@ -7,17 +7,15 @@ import com.glm.entity.pojo.MkScheduling;
 import com.glm.mapper.EsMkNotesRepository;
 import com.glm.mapper.MkNoteMapper;
 import com.glm.mapper.MkSchedulingMapper;
+import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.elasticsearch.annotations.DateFormat.date;
 
 /**
  * @program: mk-cloud
@@ -28,7 +26,7 @@ import static org.springframework.data.elasticsearch.annotations.DateFormat.date
 
 @Component
 @Log4j2
-public class MkNotesScheduling {
+public class MkNotesSchedulingXxlJob {
     @Autowired
     private EsMkNotesRepository esMkNotesRepository;
 
@@ -40,8 +38,9 @@ public class MkNotesScheduling {
 
     public static final Integer MKNOTE_TO_ES = 1;
 
-    /*每10分钟执行一次*/
-    @Scheduled(fixedDelay = 600000)
+    /*每10分钟执行一次，使用xxj-job*/
+    //@Scheduled(fixedDelay = 600000)
+    @XxlJob("MkbaseSyncArticlesJobHandler")
     public void updateDataToES() {
         log.info("-----------开始执行定时更新文章的任务------------------");
         QueryWrapper<MkScheduling> mkSchedulingQueryWrapper = Wrappers.<MkScheduling>query()

@@ -2,7 +2,11 @@ package com.glm.service.impl;
 
 
 import com.glm.MkBaseStart;
+import com.glm.entity.ResponseResult;
+import com.glm.entity.pojo.DataTakeOver;
 import com.glm.entity.pojo.MkNotes;
+import com.glm.mapper.MkNoteMapper;
+import com.glm.service.AdminNoteService;
 import org.apache.http.HttpHost;
 
 import org.apache.lucene.index.IndexReader;
@@ -37,11 +41,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class NoteServiceImplTest {
+    @Autowired
+    MkNoteMapper mkNoteMapper;
+    @Autowired
+    AdminNoteService adminNoteService;
 
     private RestHighLevelClient restClient = null;
     private static final String SCHEME = "http";
@@ -148,7 +157,7 @@ public class NoteServiceImplTest {
         SearchSourceBuilder builder = new SearchSourceBuilder();
         String key = "li";
         //查询所有
-        builder.query(QueryBuilders.multiMatchQuery(key,"name"));
+        builder.query(QueryBuilders.multiMatchQuery(key, "name"));
         searchRequest.source(builder);
         System.out.println(restClient.search(searchRequest, RequestOptions.DEFAULT));
     }
@@ -161,13 +170,23 @@ public class NoteServiceImplTest {
         SearchSourceBuilder builder = new SearchSourceBuilder();
         String key = "li";
         //查询所有
-        builder.query(QueryBuilders.multiMatchQuery(key,"name"));
+        builder.query(QueryBuilders.multiMatchQuery(key, "name"));
         builder.from(0).size(1);
         searchRequest.source(builder);
         System.out.println(restClient.search(searchRequest, RequestOptions.DEFAULT));
     }
 
+    @Test
+    public void testQueryData() {
+        List<DataTakeOver> takeOvers = mkNoteMapper.queryDataReport();
+        System.out.println("xx");
+    }
+    @Test
+    public void testQueryData2() {
+        ResponseResult responseResult = adminNoteService.queryNoteDataReport();
+        System.out.println(responseResult);
 
+    }
 
 
 

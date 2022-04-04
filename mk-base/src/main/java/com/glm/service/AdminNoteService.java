@@ -32,5 +32,10 @@ public interface AdminNoteService {
      * @return
      */
     public ResponseResult adminSetNoteStatus(UpdateNoteStatusDTO getNote );
+    /**
+     * 查询文章数据
+     * @return
+     */
+    public ResponseResult queryNoteDataReport();
 
 }

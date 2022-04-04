@@ -2,6 +2,7 @@ package com.glm.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.glm.entity.pojo.DataTakeOver;
 import com.glm.entity.pojo.MkNotes;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -10,6 +11,7 @@ import org.apache.ibatis.annotations.Update;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MkNoteMapper extends BaseMapper<MkNotes> {
@@ -29,6 +31,12 @@ public interface MkNoteMapper extends BaseMapper<MkNotes> {
 
     @Update("update mk_notes set deleted =0 where id=#{id}")
     public void recoverOneNoteById(@Param("id") Long id);
+
+    @Select("Select  share_status,count(share_status) as total\n" +
+            "from mk_notes\n" +
+            "where deleted = 0 " +
+            "group by share_status;")
+    public List<DataTakeOver> queryDataReport();
 
 
 }

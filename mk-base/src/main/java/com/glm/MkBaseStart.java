@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = {"com.glm"})
 @EnableFeignClients
 @EnableAspectJAutoProxy
-@EnableScheduling
 public class MkBaseStart {
     public static void main(String[] args) {
         SpringApplication.run(MkBaseStart.class, args);

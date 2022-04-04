@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: mk-cloud
@@ -184,7 +185,9 @@ public class EsTemplateTest {
     }
 
     @Test
-    public void test9(){
+    public void test9() {
         System.out.println(new Date());
     }
+
+
 }
