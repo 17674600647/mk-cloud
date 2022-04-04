@@ -25,7 +25,7 @@ public class UserManagerController {
     @PostMapping("/get/all/users")
     @ApiOperation("获取所有用户")
     public ResponseResult getAllUserByStatus(@RequestBody @Validated UserPageByStatusDTO userPageByStatus) {
-        return mkUserService.getAllUsersByStatus(userPageByStatus);
+        return mkUserService.getAllUsersByStatusAndKeyWords(userPageByStatus);
     }
 
     @PostMapping("/update/user/status")

@@ -34,7 +34,7 @@ public interface MkUserService {
 
     public ResponseResult getUserRole(String token);
 
-    public ResponseResult getAllUsersByStatus(UserPageByStatusDTO userPageByStatus);
+    public ResponseResult getAllUsersByStatusAndKeyWords(UserPageByStatusDTO userPageByStatus);
 
     public ResponseResult updateUserStatus(UpdateUserStatesDTO updateUserStatesDTO);
 }

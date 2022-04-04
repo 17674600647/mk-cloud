@@ -16,4 +16,5 @@ public class UserPageByStatusDTO {
     @NotNull(message = "currentPage不能为空！")
     private Integer currentPage;
     private Integer status;
+    private String content;
 }

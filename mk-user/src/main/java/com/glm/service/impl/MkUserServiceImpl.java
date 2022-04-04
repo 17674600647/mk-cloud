@@ -36,11 +36,11 @@ import com.glm.utils.MkJwtUtil;
 import com.glm.utils.RedisUtil;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -190,7 +190,7 @@ public class MkUserServiceImpl implements MkUserService {
         if (!responseResult.getCode().equals("200")) {
             return ResponseResult.error("头像上传失败" + responseResult.getMessage());
         }
-        if (StringUtils.isEmpty(responseResult.getData())) {
+        if (StringUtils.isEmpty((String) responseResult.getData())) {
             return ResponseResult.error("头像上传失败");
         }
         String id = mkjwtUtil.getUserIdFromHeader();
@@ -269,10 +269,14 @@ public class MkUserServiceImpl implements MkUserService {
     }
 
     @Override
-    public ResponseResult getAllUsersByStatus(UserPageByStatusDTO userPageByStatus) {
+    public ResponseResult getAllUsersByStatusAndKeyWords(UserPageByStatusDTO userPageByStatus) {
         QueryWrapper<MkUser> queryWrapper = new QueryWrapper<>();
         if (!userPageByStatus.getStatus().equals(2)) {
             queryWrapper.eq("status", userPageByStatus.getStatus());
+        }
+        if (!StringUtils.isBlank(userPageByStatus.getContent())) {
+            queryWrapper.or().like("username", userPageByStatus.getContent())
+                    .or().like("email", userPageByStatus.getContent()).or().like("nickname", userPageByStatus.getContent());
         }
         IPage page = new Page(userPageByStatus.getCurrentPage(), userPageByStatus.getPageSize());
         IPage page1 = userMapper.selectPage(page, queryWrapper);
@@ -291,7 +295,7 @@ public class MkUserServiceImpl implements MkUserService {
         MkUser mkUser = new MkUser();
         mkUser.setStatus(updateUserStatesDTO.getStatus().shortValue());
         int update = userMapper.update(mkUser, updateWrapper);
-        if (update!=1){
+        if (update != 1) {
             return ResponseResult.error("修改失败！");
         }
         return ResponseResult.success("修改成功！");
