@@ -300,4 +300,11 @@ public class MkUserServiceImpl implements MkUserService {
         }
         return ResponseResult.success("修改成功！");
     }
+
+    @Override
+    public ResponseResult signOut() {
+        String idFromHeader = mkjwtUtil.getUserIdFromHeader();
+        redisUtil.delete(TokenPrefixEnum.TokenPre.getPrefix() + idFromHeader);
+        return ResponseResult.success("退出登录成功~");
+    }
 }

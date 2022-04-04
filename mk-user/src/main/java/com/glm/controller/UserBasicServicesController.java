@@ -68,5 +68,11 @@ public class UserBasicServicesController {
     public ResponseResult getMkNoteInfo(@RequestBody @Valid GetOneNoteDTO getNote) {
         return mkUserService.getMkUserInfo(getNote);
     }
+
+    @PostMapping("/sign/out")
+    @ApiOperation("获取文章的用户信息")
+    public ResponseResult signOut() {
+        return mkUserService.signOut();
+    }
 }
 

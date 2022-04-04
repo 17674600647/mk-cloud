@@ -37,4 +37,6 @@ public interface MkUserService {
     public ResponseResult getAllUsersByStatusAndKeyWords(UserPageByStatusDTO userPageByStatus);
 
     public ResponseResult updateUserStatus(UpdateUserStatesDTO updateUserStatesDTO);
+    public ResponseResult signOut();
+
 }
