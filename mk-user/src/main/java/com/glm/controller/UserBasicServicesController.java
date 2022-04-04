@@ -70,7 +70,7 @@ public class UserBasicServicesController {
     }
 
     @PostMapping("/sign/out")
-    @ApiOperation("获取文章的用户信息")
+    @ApiOperation("用户登出")
     public ResponseResult signOut() {
         return mkUserService.signOut();
     }
