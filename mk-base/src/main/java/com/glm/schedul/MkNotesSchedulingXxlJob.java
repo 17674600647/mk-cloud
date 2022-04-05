@@ -39,6 +39,10 @@ public class MkNotesSchedulingXxlJob {
     public static final Integer MKNOTE_TO_ES = 1;
 
     /*每10分钟执行一次，使用xxj-job*/
+
+    /**
+     * 同步新增的文章
+     */
     //@Scheduled(fixedDelay = 600000)
     @XxlJob("MkbaseSyncArticlesJobHandler")
     public void updateDataToES() {
@@ -79,4 +83,6 @@ public class MkNotesSchedulingXxlJob {
         log.info("本次更新的文章ID" + longs);
         log.info("-----------定时任务结束------------------");
     }
+
+
 }
