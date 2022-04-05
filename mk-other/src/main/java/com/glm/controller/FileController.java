@@ -27,10 +27,13 @@ public class FileController {
     AliOssService aliOssService;
 
 
+
+
     @PostMapping("/pic/upload")
     @ApiOperation("图片上传")
     public ResponseResult picUpload(@RequestPart("file") MultipartFile file) {
         String picUrl = aliOssService.upload(file);
+
         return ResponseResult.success("上传成功", picUrl);
     }
 }

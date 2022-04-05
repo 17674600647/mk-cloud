@@ -4,6 +4,8 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.*;
 import com.glm.entity.OssEntity;
+import com.glm.entity.pojo.MkPicUrl;
+import com.glm.mapper.MkPicUrlMapper;
 import com.glm.service.AliOssService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,6 +26,9 @@ import java.util.UUID;
 @Service
 public class AliOssServiceImpl implements AliOssService, InitializingBean {
     @Autowired
+    private MkPicUrlMapper mkPicUrlMapper;
+
+    @Autowired
     private OssEntity ossEntity;
     // Endpoint以杭州为例，其它Region请按实际情况填写。
     private String endpoint;
@@ -36,6 +41,7 @@ public class AliOssServiceImpl implements AliOssService, InitializingBean {
 
     /**
      * 初始化Bean之后要进行的操作
+     *
      * @throws Exception
      */
     @Override
@@ -45,6 +51,7 @@ public class AliOssServiceImpl implements AliOssService, InitializingBean {
         accessKeySecret = ossEntity.getAccessKeySecret();
         bucketName = ossEntity.getBucketName();
     }
+
     /**
      * 创建存储空间
      */
@@ -52,7 +59,7 @@ public class AliOssServiceImpl implements AliOssService, InitializingBean {
     public void createBucket() {
         // 创建OSSClient实例。
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-        if(ossClient.doesBucketExist(bucketName)){
+        if (ossClient.doesBucketExist(bucketName)) {
             throw new RuntimeException(bucketName + "在对象存储的Bucket列表中已经存在");
         }
         // 创建存储空间。
@@ -70,9 +77,9 @@ public class AliOssServiceImpl implements AliOssService, InitializingBean {
     @Override
     public String upload(MultipartFile file) {
         String uploadUrl = null;
-        try{
+        try {
             OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-            if(!ossClient.doesBucketExist(bucketName)){
+            if (!ossClient.doesBucketExist(bucketName)) {
                 ossClient.createBucket(bucketName);
                 ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicRead);
             }
@@ -102,18 +109,21 @@ public class AliOssServiceImpl implements AliOssService, InitializingBean {
             ossClient.putObject(bucketName, fileName, inputStream, objectMetadata);
             ossClient.shutdown();
             //设置过期时间  10年不过期  可以直接预览
-            Date expiration = new Date(System.currentTimeMillis()+ 3600L * 1000 * 24 * 365 * 10);
+            Date expiration = new Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10);
             uploadUrl = ossClient.generatePresignedUrl(bucketName, fileName, expiration).toString();
             //uploadUrl = " https://" + bucketName + "." + endpoint + "/" + fileName;
 
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // 创建OSSClient实例。
-        return uploadUrl.substring(0, uploadUrl.indexOf("?"));
+        String url = uploadUrl.substring(0, uploadUrl.indexOf("?"));
+        MkPicUrl mkPicUrl = new MkPicUrl();
+        mkPicUrl.setUrl(url);
+        mkPicUrl.setSize(file.getSize());
+        mkPicUrlMapper.insert(mkPicUrl);
+        return url;
     }
-
-
 
 
     /**
@@ -180,10 +190,12 @@ public class AliOssServiceImpl implements AliOssService, InitializingBean {
         // 关闭OSSClient。
         ossClient.shutdown();
     }
+
     /**
      * Description: 判断OSS服务文件上传时文件的contentType
+     * <p>
+     * 文件后缀
      *
-     *            文件后缀
      * @return String
      */
     public static String getcontentType(String filenameExtension) {
