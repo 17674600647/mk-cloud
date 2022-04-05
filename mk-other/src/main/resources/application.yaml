@@ -1,45 +1,45 @@
-server:
-  port: 11302
-spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://47.103.216.189:5432/mk-cloud?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
-    username: postgres
-    password: '@Lzy2018.cn'
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 47.103.216.189:8848
-        namespace: 3908062f-c0bb-426d-8081-589594521b36
-      config:
-        max-retry: 0
-  redis:
-    host: 47.103.216.189
-    port: 6379
-    password: '@Lzy2018.cn'
-    timeout: 30000
-  kafka:
-    # 消费者
-    consumer:
-      group-id: mkcloud
-      auto-offset-reset: earliest
-      bootstrap-servers: 124.223.65.85:9092
-    # 生产者
-    producer:
-      bootstrap-servers: 124.223.65.85:9092
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-xxl:
-  job:
-    admin:
-      addresses: http://localhost:12700/xxl-job-admin
-    executor:
-      ip:
-      port: 9998
-      logpath: /data/applogs/xxl-job/jobhandler
-      appname: other-job
-      logRetentionDays: 30
-
-
-
-
+#server:
+#  port: 11302
+#spring:
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://47.103.216.189:5432/mk-cloud?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
+#    username: postgres
+#    password: '@Lzy2018.cn'
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 47.103.216.189:8848
+#        namespace: 3908062f-c0bb-426d-8081-589594521b36
+#      config:
+#        max-retry: 0
+#  redis:
+#    host: 47.103.216.189
+#    port: 6379
+#    password: '@Lzy2018.cn'
+#    timeout: 30000
+#  kafka:
+#    # 消费者
+#    consumer:
+#      group-id: mkcloud
+#      auto-offset-reset: earliest
+#      bootstrap-servers: 124.223.65.85:9092
+#    # 生产者
+#    producer:
+#      bootstrap-servers: 124.223.65.85:9092
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#xxl:
+#  job:
+#    admin:
+#      addresses: http://localhost:12700/xxl-job-admin
+#    executor:
+#      ip:
+#      port: 9998
+#      logpath: /data/applogs/xxl-job/jobhandler
+#      appname: other-job
+#      logRetentionDays: 30
+#
+#
+#
+#

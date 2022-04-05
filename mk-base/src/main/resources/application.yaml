@@ -1,28 +1,28 @@
-spring:
-  elasticsearch:
-    rest:
-      uris: http://124.223.65.85:9200
-  kafka:
-    # 消费者
-    consumer:
-      group-id: mkcloud
-      auto-offset-reset: earliest
-      bootstrap-servers: 124.223.65.85:9092
-    # 生产者
-    producer:
-      bootstrap-servers: 124.223.65.85:9092
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-xxl:
-  job:
-    admin:
-      addresses: http://localhost:12700/xxl-job-admin
-    executor:
-      ip:
-      port: 9999
-      logpath: /data/applogs/xxl-job/jobhandler
-      appname: base-job
-      logRetentionDays: 30
+#spring:
+#  elasticsearch:
+#    rest:
+#      uris: http://124.223.65.85:9200
+#  kafka:
+#    # 消费者
+#    consumer:
+#      group-id: mkcloud
+#      auto-offset-reset: earliest
+#      bootstrap-servers: 124.223.65.85:9092
+#    # 生产者
+#    producer:
+#      bootstrap-servers: 124.223.65.85:9092
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#xxl:
+#  job:
+#    admin:
+#      addresses: http://localhost:12700/xxl-job-admin
+#    executor:
+#      ip:
+#      port: 9999
+#      logpath: /data/applogs/xxl-job/jobhandler
+#      appname: base-job
+#      logRetentionDays: 30
 
 
 
