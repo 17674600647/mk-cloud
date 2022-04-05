@@ -164,9 +164,7 @@ public class NoteServiceImpl implements NoteService {
                 .select("id", "title", "create_time", "update_time", "classic", "user_id", "share_status")
                 .eq("user_id", Long.valueOf(mkJwtUtil.getUserIdFromHeader()))
                 .and((wrapper) -> {
-                    wrapper.eq("share_status", MKNOTE_SHARED)
-                            .or()
-                            .eq("share_status", MKNOTE_CHECK);
+                    wrapper.eq("share_status", MKNOTE_SHARED);
                 });
         IPage<MkNotes> mkNotesIPage = mkNoteMapper.selectPage(notePage, queryWrapper);
         return ResponseResult.success("查询成功!", new ObjectPageVO<MkNotes>(mkNotesIPage.getTotal(), mkNotesIPage.getRecords()));
