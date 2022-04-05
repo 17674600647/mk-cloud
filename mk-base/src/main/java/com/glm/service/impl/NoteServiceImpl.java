@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.glm.config.exception.MessageException;
+import com.glm.entity.MkLogs;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.GetNotesDTO;
 import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.NoteDTO;
 
+import com.glm.entity.enums.MkLogEnum;
 import com.glm.entity.pojo.MkCollect;
 import com.glm.entity.pojo.MkNotes;
 
@@ -19,6 +21,7 @@ import com.glm.mapper.MkCollectMapper;
 import com.glm.mapper.MkNoteMapper;
 import com.glm.service.NoteService;
 import com.glm.utils.MkJwtUtil;
+import com.glm.utils.MkKafkaUtil;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,9 @@ public class NoteServiceImpl implements NoteService {
     MkNoteMapper mkNoteMapper;
 
     @Autowired
+    MkKafkaUtil mkKafkaUtil;
+
+    @Autowired
     MkCollectMapper mkCollectmapper;
 
     public static Short MKNOTE_SHARED = 1;
@@ -61,6 +67,7 @@ public class NoteServiceImpl implements NoteService {
         if (StringUtils.isEmpty(noteDTO.getNoteId())) {
             int result = mkNoteMapper.insert(mkNotes);
             if (result == 1) {
+                mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.NEW_NOTE,userId));
                 return ResponseResult.success("保存成功!", String.valueOf(mkNotes.getId()));
             }
             return ResponseResult.error("保存失败!");
@@ -129,6 +136,7 @@ public class NoteServiceImpl implements NoteService {
             return ResponseResult.error("身份存在错误");
         }
         mkNoteMapper.deleteById(Long.valueOf(getNote.getNoteId()));
+        mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.DELETE_NOTE_SELF,userId));
         return ResponseResult.success("删除成功！");
     }
 

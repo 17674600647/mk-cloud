@@ -11,4 +11,5 @@ package com.glm.entity.constant;
 public  class StringConstant {
    public static final String USERID = "userId";
    public static final String USER_AUTH= "role";
+   public static final String KAFKA_TOPIC= "mkcloud";
 }

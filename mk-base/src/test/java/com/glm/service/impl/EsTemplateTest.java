@@ -5,10 +5,12 @@ import com.glm.mapper.EsMkNotesRepository;
 import com.glm.mapper.MkNoteMapper;
 import com.glm.utils.EsUtil;
 import lombok.extern.log4j.Log4j2;
+import org.checkerframework.checker.units.qual.A;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
@@ -189,5 +192,15 @@ public class EsTemplateTest {
         System.out.println(new Date());
     }
 
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Test
+    public void test() {
+        String messge = "shabi1";
+        kafkaTemplate.send("topic1", "topci1:" + messge);
+        kafkaTemplate.send("topic2", "topci2:" + messge);
+    }
 
 }

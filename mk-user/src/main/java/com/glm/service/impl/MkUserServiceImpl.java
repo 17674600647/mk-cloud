@@ -14,12 +14,14 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.glm.config.exception.MessageException;
+import com.glm.entity.MkLogs;
 import com.glm.entity.PageVO;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.constant.StringConstant;
 import com.glm.entity.dto.*;
 import com.glm.entity.enmu.TokenPrefixEnum;
 import com.glm.entity.enmu.UserAuthEnum;
+import com.glm.entity.enums.MkLogEnum;
 import com.glm.entity.pojo.MkUser;
 import com.glm.entity.pojo.MkUserAuth;
 import com.glm.entity.vo.LoginVO;
@@ -33,6 +35,7 @@ import com.glm.mapper.MkUserAuthMapper;
 import com.glm.mapper.MkUserMapper;
 import com.glm.service.MkUserService;
 import com.glm.utils.MkJwtUtil;
+import com.glm.utils.MkKafkaUtil;
 import com.glm.utils.RedisUtil;
 
 import lombok.extern.log4j.Log4j2;
@@ -66,8 +69,12 @@ public class MkUserServiceImpl implements MkUserService {
 
     @Autowired
     RedisUtil redisUtil;
+
     @Autowired
     MkJwtUtil mkjwtUtil;
+
+    @Autowired
+    MkKafkaUtil mkKafkaUtil;
 
     @Autowired
     MkUserAuthMapper mkUserAuthMapper;
@@ -77,6 +84,8 @@ public class MkUserServiceImpl implements MkUserService {
 
     @Autowired
     MkBaseFeign mkBaseFeign;
+    @Autowired
+    MkJwtUtil mkJwtUtil;
 
     @Override
     public ResponseResult login(LoginDTO loginDTO) {
@@ -106,6 +115,8 @@ public class MkUserServiceImpl implements MkUserService {
         loginVO.setAuthInfo(userInfoBase64);
         //保存到Redis,过期时间设置为1小时
         redisUtil.set(TokenPrefixEnum.TokenPre.getPrefix() + mkUser.getId(), token, TokenOverTime);
+        //发送到kafka
+        mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.LOGIN, mkUser.getId()));
         return ResponseResult.success("登录成功", loginVO);
     }
 
@@ -138,6 +149,7 @@ public class MkUserServiceImpl implements MkUserService {
             return ResponseResult.error("注册失败~,账号或者邮箱存在~");
         }
         if (insert == 1) {
+            mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.SIGN_IN, registerMkUser.getId()));
             return ResponseResult.success("注册成功~");
         }
         return ResponseResult.error("注册失败~");
@@ -203,6 +215,7 @@ public class MkUserServiceImpl implements MkUserService {
             return ResponseResult.error("头像上传失败");
         }
         redisUtil.delete(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + id);
+        mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.CHANGE_HEADPIC, Long.valueOf(id)));
         return ResponseResult.success("上传成功~！");
     }
 
@@ -227,7 +240,8 @@ public class MkUserServiceImpl implements MkUserService {
         if (update == 0) {
             return ResponseResult.error("信息更新失败");
         }
-        return ResponseResult.success("信息成功~！");
+        mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.UPDATE_INFO, Long.valueOf(idFromHeader)));
+        return ResponseResult.success("信息修改成功~！");
     }
 
     @Override
@@ -298,6 +312,16 @@ public class MkUserServiceImpl implements MkUserService {
         if (update != 1) {
             return ResponseResult.error("修改失败！");
         }
+        if (updateUserStatesDTO.status == -1) {
+            mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.BAN_USER, Long.valueOf(mkJwtUtil.getUserIdFromHeader())));
+        }
+        if (updateUserStatesDTO.status == 0) {
+            mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.FREEZE_USER, Long.valueOf(mkJwtUtil.getUserIdFromHeader())));
+        }
+           
+        if (updateUserStatesDTO.status == 1) {
+            mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.RECOVER_USER, Long.valueOf(mkJwtUtil.getUserIdFromHeader())));
+        }
         return ResponseResult.success("修改成功！");
     }
 
@@ -305,6 +329,7 @@ public class MkUserServiceImpl implements MkUserService {
     public ResponseResult signOut() {
         String idFromHeader = mkjwtUtil.getUserIdFromHeader();
         redisUtil.delete(TokenPrefixEnum.TokenPre.getPrefix() + idFromHeader);
+        mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.LOGIN_OUT, Long.valueOf(idFromHeader)));
         return ResponseResult.success("退出登录成功~");
     }
 }

@@ -16,6 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 public interface MkUserService {
+    /**
+     * 登录
+     * @param loginDTO
+     * @return
+     */
     public ResponseResult<LoginVO> login(LoginDTO loginDTO);
 
     public ResponseResult register(RegisterDTO loginDTO);
@@ -37,6 +42,7 @@ public interface MkUserService {
     public ResponseResult getAllUsersByStatusAndKeyWords(UserPageByStatusDTO userPageByStatus);
 
     public ResponseResult updateUserStatus(UpdateUserStatesDTO updateUserStatesDTO);
+
     public ResponseResult signOut();
 
 }

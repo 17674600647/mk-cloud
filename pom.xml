@@ -48,6 +48,8 @@
         <druid.version>1.1.16</druid.version>
         <redis-pool>2.6.2</redis-pool>
         <xxljob.version>2.3.0</xxljob.version>
+<!--        <kafka.version>2.2.6.RELEASE</kafka.version>-->
+<!--        <kafka.clients.version>2.1.0</kafka.clients.version>-->
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -147,6 +149,16 @@
                 <artifactId>xxl-job-core</artifactId>
                 <version>${xxljob.version}</version>
             </dependency>
+        <!--    <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.clients.version}</version>
+            </dependency>-->
         </dependencies>
     </dependencyManagement>
 

@@ -18,7 +18,17 @@ spring:
     port: 6379
     password: '@Lzy2018.cn'
     timeout: 30000
-
+  kafka:
+    # 消费者
+    consumer:
+      group-id: mkcloud
+      auto-offset-reset: earliest
+      bootstrap-servers: 124.223.65.85:9092
+    # 生产者
+    producer:
+      bootstrap-servers: 124.223.65.85:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 
 

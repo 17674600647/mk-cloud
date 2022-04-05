@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.glm.entity.MkLogs;
 import com.glm.entity.NoteStatusEnum;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.GetNotesDTO;
 import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.UpdateNoteStatusDTO;
+import com.glm.entity.enums.MkLogEnum;
 import com.glm.entity.pojo.DataTakeOver;
 import com.glm.entity.pojo.MkNotes;
 import com.glm.entity.vo.DataReportVO;
@@ -18,6 +20,7 @@ import com.glm.entity.vo.ObjectPageVO;
 import com.glm.mapper.MkNoteMapper;
 import com.glm.service.AdminNoteService;
 import com.glm.utils.MkJwtUtil;
+import com.glm.utils.MkKafkaUtil;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,8 @@ public class AdminNoteServiceImpl implements AdminNoteService {
     MkJwtUtil mkJwtUtil;
     @Autowired
     MkNoteMapper mkNoteMapper;
+    @Autowired
+    MkKafkaUtil mkKafkaUtil;
 
     @Override
     public ResponseResult getPageNotesByShareStatus(GetNotesDTO getNote) {
@@ -64,6 +69,7 @@ public class AdminNoteServiceImpl implements AdminNoteService {
     @Override
     public ResponseResult adminDeleteOneNote(GetOneNoteDTO getNote) {
         mkNoteMapper.deleteById(Long.valueOf(getNote.getNoteId()));
+        mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.DELETE_NOTE_ADMIN, Long.valueOf(mkJwtUtil.getUserIdFromHeader())));
         return ResponseResult.success("删除完成！");
     }
 
