@@ -162,9 +162,10 @@ public class MkUserServiceImpl implements MkUserService {
         if (redisUtil.get(TokenPrefixEnum.TokenPre.getPrefix() + userId) != null) {
             //重新设置时间
             redisUtil.expire(TokenPrefixEnum.TokenPre.getPrefix() + userId, TokenOverTime);
-            return ResponseResult.success("登陆状态未失效");
+            Integer roleByToken = mkjwtUtil.getUserRoleByToken(authDto.getToken());
+            return ResponseResult.success("登陆状态未失效",roleByToken);
         }
-        return ResponseResult.error("登陆状态失效");
+        return ResponseResult.error("登陆失效");
     }
 
     @Override

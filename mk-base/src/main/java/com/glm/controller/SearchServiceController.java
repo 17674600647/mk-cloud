@@ -35,13 +35,13 @@ public class SearchServiceController {
     NoteSearchService noteSearchService;
 
 
-    @PostMapping("/search/share/notes/")
+    @PostMapping("/share/notes")
     @ApiOperation("搜索分享的文章标题与内容")
     public ResponseResult searchNotes(@Valid @RequestBody SearchNotesDTO searchNotes) {
         return noteSearchService.searchSharedNotes(searchNotes);
     }
 
-    @PostMapping("/search/share/notes/title")
+    @PostMapping("/share/notes/title")
     @ApiOperation("搜索分享的文章标题")
     public ResponseResult searchNotesTitles(@Valid @RequestBody SearchNotesDTO searchNotes) {
         return noteSearchService.searchSharedNoteTitles(searchNotes);

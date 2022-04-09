@@ -1,5 +1,6 @@
 package com.glm.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.AuthDto;
 import com.glm.entity.dto.LoginDTO;
@@ -41,12 +42,12 @@ public class UserAuthController {
     public String verifyTokenRPC(@RequestBody String token) {
         AuthDto authDto = new AuthDto();
         authDto.setToken(token);
-        return mkUserService.verifyToken(authDto).getCode();
+        return String.valueOf(mkUserService.verifyToken(authDto).getData());
     }
 
     @RequestMapping("/get/user/role")
     @ApiOperation("用户Token身份验证,RPC接口")
-    public ResponseResult getUserRole(@RequestBody(required = false)String token) {
+    public ResponseResult getUserRole(@RequestBody(required = false) String token) {
         return mkUserService.getUserRole(token);
     }
 

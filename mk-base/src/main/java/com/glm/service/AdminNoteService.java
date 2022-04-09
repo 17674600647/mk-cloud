@@ -5,6 +5,10 @@ import com.glm.entity.dto.GetNotesDTO;
 import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.UpdateNoteStatusDTO;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public interface AdminNoteService {
     /**
      * 根据分享状态获取文章列表
@@ -37,5 +41,9 @@ public interface AdminNoteService {
      * @return
      */
     public ResponseResult queryNoteDataReport();
-
+    /**
+     * 查询接口权限数据
+     * @return
+     */
+    public Map<String, List<Integer>> queryUrlAuth();
 }

@@ -1,5 +1,6 @@
 package com.glm.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -15,9 +16,11 @@ import com.glm.entity.dto.UpdateNoteStatusDTO;
 import com.glm.entity.enums.MkLogEnum;
 import com.glm.entity.pojo.DataTakeOver;
 import com.glm.entity.pojo.MkNotes;
+import com.glm.entity.pojo.MkUrlAuth;
 import com.glm.entity.vo.DataReportVO;
 import com.glm.entity.vo.ObjectPageVO;
 import com.glm.mapper.MkNoteMapper;
+import com.glm.mapper.MkUrlAuthMapper;
 import com.glm.service.AdminNoteService;
 import com.glm.utils.MkJwtUtil;
 import com.glm.utils.MkKafkaUtil;
@@ -26,8 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +45,9 @@ public class AdminNoteServiceImpl implements AdminNoteService {
     MkNoteMapper mkNoteMapper;
     @Autowired
     MkKafkaUtil mkKafkaUtil;
+    @Autowired
+    MkUrlAuthMapper mkUrlAuthMapper;
+
 
     @Override
     public ResponseResult getPageNotesByShareStatus(GetNotesDTO getNote) {
@@ -114,5 +123,21 @@ public class AdminNoteServiceImpl implements AdminNoteService {
         dataReportVO.setNotPassed((int) notePassed);
         dataReportVO.setNotPassedRate((int) notPassRate);
         return ResponseResult.success(dataReportVO);
+    }
+
+    @Override
+    public Map<String, List<Integer>> queryUrlAuth() {
+        List<MkUrlAuth> mkUrlAuths = mkUrlAuthMapper.selectList(null);
+        Map<String, List<Integer>> urlMap=new HashMap<String, List<Integer>>();
+        for (MkUrlAuth urlAuth : mkUrlAuths) {
+            if (urlAuth.getState()==1){
+                if (urlMap.containsKey(urlAuth.getUrl())){
+                    new ArrayList<Integer>(urlMap.get(urlAuth.getUrl())).add(urlAuth.getAuthId());
+                }else {
+                    urlMap.put(urlAuth.getUrl(),List.of(urlAuth.getAuthId()));
+                }
+            }
+        }
+        return urlMap;
     }
 }

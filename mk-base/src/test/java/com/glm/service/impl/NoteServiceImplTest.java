@@ -5,7 +5,9 @@ import com.glm.MkBaseStart;
 import com.glm.entity.ResponseResult;
 import com.glm.entity.pojo.DataTakeOver;
 import com.glm.entity.pojo.MkNotes;
+import com.glm.entity.pojo.MkUrlAuth;
 import com.glm.mapper.MkNoteMapper;
+import com.glm.mapper.MkUrlAuthMapper;
 import com.glm.service.AdminNoteService;
 import org.apache.http.HttpHost;
 
@@ -51,6 +53,8 @@ public class NoteServiceImplTest {
     MkNoteMapper mkNoteMapper;
     @Autowired
     AdminNoteService adminNoteService;
+    @Autowired
+    MkUrlAuthMapper mkUrlAuthMapper;
 
     private RestHighLevelClient restClient = null;
     private static final String SCHEME = "http";
@@ -188,6 +192,9 @@ public class NoteServiceImplTest {
 
     }
 
-
+    @Test
+    public void testQueryData3x() {
+        List<MkUrlAuth> mkUrlAuths = mkUrlAuthMapper.selectList(null);
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.glm.feign;
+package com.glm.feign.feignFallBack;
 
 import com.glm.feign.MkUserFeign;
 import org.springframework.stereotype.Component;
@@ -15,6 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class MkUserFallBack implements MkUserFeign {
     @Override
     public String verifyTokenRPC(@RequestBody String token) {
-        return "身份验证请求失败~";
+        return null;
     }
 }
