@@ -101,10 +101,14 @@ public class MkUserServiceImpl implements MkUserService {
             return ResponseResult.error("账号/邮箱密码不匹配~");
         }
         MkUser mkUser = mkUsers.get(0);
+        if (mkUser.getStatus() == -1){
+            throw new MessageException("用户账号被封禁");
+        }
         mkUser.desensitized();
         Map<String, String> jwtMap = new HashMap<String, String>();
         jwtMap.put(StringConstant.USERID, mkUser.getId().toString());
         jwtMap.put("nickName", mkUser.getNickName());
+        jwtMap.put("status", String.valueOf(mkUser.getStatus()));
         List<Integer> userAuthRole = mkUserAuthMapper.findUserAuthMark(mkUser.getId());
         jwtMap.put(StringConstant.USER_AUTH, String.valueOf(userAuthRole.get(0)));
         String token = mkjwtUtil.createToken(jwtMap);

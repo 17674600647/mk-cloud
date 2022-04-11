@@ -69,7 +69,7 @@ public class NoteServiceImpl implements NoteService {
         if (StringUtils.isEmpty(noteDTO.getNoteId())) {
             int result = mkNoteMapper.insert(mkNotes);
             if (result == 1) {
-                mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.NEW_NOTE,userId));
+                mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.NEW_NOTE, userId));
                 return ResponseResult.success("保存成功!", String.valueOf(mkNotes.getId()));
             }
             return ResponseResult.error("保存失败!");
@@ -107,7 +107,6 @@ public class NoteServiceImpl implements NoteService {
     }
 
 
-
     @Override
     public ResponseResult getPageDeleteNotes(GetNotesDTO getNote) {
         IPage<MkNotes> notePage = new Page<MkNotes>(getNote.getCurrentPage(), getNote.getPageSize());
@@ -138,11 +137,9 @@ public class NoteServiceImpl implements NoteService {
             return ResponseResult.error("身份存在错误");
         }
         mkNoteMapper.deleteById(Long.valueOf(getNote.getNoteId()));
-        mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.DELETE_NOTE_SELF,userId));
+        mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.DELETE_NOTE_SELF, userId));
         return ResponseResult.success("删除成功！");
     }
-
-
 
 
     @Override
@@ -174,8 +171,8 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public ResponseResult toShareNote(GetOneNoteDTO getNote) {
-        changeShareStatus(getNote, MKNOTE_CHECK);
-        return ResponseResult.success("已添加分享，待审核！");
+        return  changeShareStatus(getNote, MKNOTE_CHECK);
+
     }
 
     @Override
@@ -208,8 +205,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public ResponseResult toDishareNote(GetOneNoteDTO getNote) {
-        changeShareStatus(getNote, MKNOTE_DISHARE);
-        return ResponseResult.success("已删除分享");
+       return changeShareStatus(getNote, MKNOTE_DISHARE);
     }
 
     @Override
@@ -235,18 +231,28 @@ public class NoteServiceImpl implements NoteService {
         return ResponseResult.success("查询成功!", notesPageVO);
     }
 
-    public void changeShareStatus(GetOneNoteDTO getNote, Short status) {
+    public ResponseResult changeShareStatus(GetOneNoteDTO getNote, Short status) {
         MkNotes mkNotes = mkNoteMapper.selectOne(Wrappers.<MkNotes>query()
                 .select("share_status", "user_id")
                 .eq("id", Long.valueOf(getNote.getNoteId())));
         Long userId = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
+        String statusFromHeader = mkJwtUtil.getUserStatusFromHeader();
         if (!userId.equals(mkNotes.getUserId())) {
             throw new MessageException("用户信息不匹配~");
+        }
+        if (status==MKNOTE_CHECK ){
+                if (statusFromHeader.equals("0")){
+                    throw new MessageException("用户账号被冻结,无法分享~");
+                }
+        }
+        if (statusFromHeader.equals("-1")){
+            throw new MessageException("用户账号被封禁");
         }
         mkNotes.setShareStatus(status);
         UpdateWrapper<MkNotes> updateWrapper = new UpdateWrapper<MkNotes>();
         updateWrapper.eq("id", Long.valueOf(getNote.getNoteId()));
         mkNoteMapper.update(mkNotes, updateWrapper);
+        return ResponseResult.success("提交分享成功！待审核");
     }
 
 

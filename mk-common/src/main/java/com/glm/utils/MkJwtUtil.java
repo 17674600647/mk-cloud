@@ -60,7 +60,13 @@ public class MkJwtUtil {
         }
         throw new MessageException("权限出错~");
     }
-
+    public String getUserStatusByToken(String token) {
+        Map<String, String> userIdMap = getUserInfoByToken(token);
+        if (userIdMap!=null&&userIdMap.get(StringConstant.USER_AUTH) != null) {
+            return userIdMap.get(StringConstant.USER_STATUS);
+        }
+        throw new MessageException("从token获取用户状态出错~");
+    }
 
     //验证JWT是否有效
     public boolean checkJWT(String token) {
@@ -78,12 +84,21 @@ public class MkJwtUtil {
         return null;
     }
 
-    //从请求头中获取
+    //从请求头中获取权限信息
     public Integer getUserRoleFromHeader() {
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         String token = request.getHeader("token");
         if (token != null) {
             return getUserRoleByToken(token);
+        }
+        return null;
+    }
+    //从请求头中获取status信息
+    public String getUserStatusFromHeader() {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        String token = request.getHeader("token");
+        if (token != null) {
+            return getUserStatusByToken(token);
         }
         return null;
     }
