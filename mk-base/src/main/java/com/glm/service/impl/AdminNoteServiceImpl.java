@@ -126,15 +126,17 @@ public class AdminNoteServiceImpl implements AdminNoteService {
     }
 
     @Override
-    public Map<String, List<Integer>> queryUrlAuth() {
+    public Map<String, ArrayList<Integer>> queryUrlAuth() {
         List<MkUrlAuth> mkUrlAuths = mkUrlAuthMapper.selectList(null);
-        Map<String, List<Integer>> urlMap=new HashMap<String, List<Integer>>();
+        Map<String, ArrayList<Integer>> urlMap = new HashMap<String, ArrayList<Integer>>();
         for (MkUrlAuth urlAuth : mkUrlAuths) {
-            if (urlAuth.getState()==1){
-                if (urlMap.containsKey(urlAuth.getUrl())){
-                    new ArrayList<Integer>(urlMap.get(urlAuth.getUrl())).add(urlAuth.getAuthId());
-                }else {
-                    urlMap.put(urlAuth.getUrl(),List.of(urlAuth.getAuthId()));
+            if (urlAuth.getState() == 1) {
+                if (urlMap.containsKey(urlAuth.getUrl())) {
+                    urlMap.get(urlAuth.getUrl()).add(urlAuth.getAuthId());
+                } else {
+                    ArrayList<Integer> list = new ArrayList<>();
+                    list.add(urlAuth.getAuthId());
+                    urlMap.put(urlAuth.getUrl(),list);
                 }
             }
         }

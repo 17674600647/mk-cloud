@@ -19,10 +19,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -44,7 +42,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
             synchronized (AuthorizeFilter.class) {
                 if (Objects.isNull(urlHashMap)) {
                     try{
-                        Map<String, List<Integer>> stringListMap = mkBaseFeign.queryUrlAuth();
+                        Map<String, ArrayList<Integer>> stringListMap = mkBaseFeign.queryUrlAuth();
                         urlHashMap = new ConcurrentHashMap<>(stringListMap);
                         System.out.println("获取到Url权限");
                     }catch (Exception e){

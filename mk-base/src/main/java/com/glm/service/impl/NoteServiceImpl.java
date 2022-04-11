@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.houbb.sensitive.word.bs.SensitiveWordBs;
 import com.glm.config.exception.MessageException;
 import com.glm.entity.MkLogs;
 import com.glm.entity.ResponseResult;
@@ -61,8 +62,9 @@ public class NoteServiceImpl implements NoteService {
     public ResponseResult saveNote(NoteDTO noteDTO) {
         Long userId = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
         MkNotes mkNotes = new MkNotes();
-        mkNotes.setContent(noteDTO.getContent());
-        mkNotes.setTitle(noteDTO.getTitle());
+        String replaceContent = SensitiveWordBs.newInstance().replace(noteDTO.getContent());
+        mkNotes.setContent(replaceContent);
+        mkNotes.setTitle(SensitiveWordBs.newInstance().replace(noteDTO.getTitle()));
         mkNotes.setUserId(userId);
         if (StringUtils.isEmpty(noteDTO.getNoteId())) {
             int result = mkNoteMapper.insert(mkNotes);

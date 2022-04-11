@@ -36,7 +36,7 @@ public interface StatisticMapper extends BaseMapper<MkStatistic> {
      */
     @Select("select count(ml.id)\n" +
             "from mk_logs ml\n" +
-            "where ml.action_mark = '12700'")
+            "where ml.action_mark = '12700' and create_time >=current_date-1")
     public Integer queryTotalLogin();
 
     /**

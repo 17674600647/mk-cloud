@@ -48,6 +48,7 @@
         <druid.version>1.1.16</druid.version>
         <redis-pool>2.6.2</redis-pool>
         <xxljob.version>2.3.0</xxljob.version>
+        <sensitive.version>0.0.4</sensitive.version>
 <!--        <kafka.version>2.2.6.RELEASE</kafka.version>-->
 <!--        <kafka.clients.version>2.1.0</kafka.clients.version>-->
     </properties>
@@ -148,6 +149,11 @@
                 <groupId>com.xuxueli</groupId>
                 <artifactId>xxl-job-core</artifactId>
                 <version>${xxljob.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.houbb</groupId>
+                <artifactId>sensitive-word</artifactId>
+                <version>${sensitive.version}</version>
             </dependency>
         <!--    <dependency>
                 <groupId>org.springframework.kafka</groupId>

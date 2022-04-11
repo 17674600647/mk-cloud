@@ -5,8 +5,10 @@ import com.glm.entity.ResponseResult;
 import com.glm.entity.dto.EmailSendDTO;
 import com.glm.entity.dto.QueryLogsPageDTO;
 import com.glm.exception.ControllerFieldAspect;
+import com.glm.mapper.StatisticMapper;
 import com.glm.service.EmailService;
 import com.glm.service.LogsService;
+import com.glm.service.StatisticService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,9 @@ public class BaseServiceController {
     @Autowired
     LogsService logsService;
 
+    @Autowired
+    StatisticService statisticService;
+
     @PostMapping("/email/send")
     @ApiOperation("发送邮箱验证码接口")
     public ResponseResult emailSend(@RequestBody @Valid EmailSendDTO emailSendDTO) {
@@ -46,6 +51,12 @@ public class BaseServiceController {
     @ApiOperation("查询日志接口")
     public ResponseResult queryLogs(@RequestBody @Valid QueryLogsPageDTO queryLogsPage) {
         return logsService.queryLogsByLevel(queryLogsPage);
+    }
+
+    @PostMapping("/query/data/report")
+    @ApiOperation("查询数据接口")
+    public ResponseResult queryDataReport() {
+        return statisticService.queryDataReport();
     }
 
 }

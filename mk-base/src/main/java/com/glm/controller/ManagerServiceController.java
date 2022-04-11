@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,7 +59,7 @@ public class ManagerServiceController {
 
     @PostMapping("/query/url/auth")
     @ApiOperation("查询接口访问权限")
-    public Map<String, List<Integer>> queryUrlAuth() {
+    public Map<String, ArrayList<Integer>> queryUrlAuth() {
         return adminNoteService.queryUrlAuth();
     }
 

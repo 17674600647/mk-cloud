@@ -25,7 +25,7 @@ public class MkStatistic {
     private Integer loginNumb;
     @TableField(value = "share_numb")
     private Integer shareNumb;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 }
