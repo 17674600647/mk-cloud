@@ -101,7 +101,7 @@ public class MkUserServiceImpl implements MkUserService {
             return ResponseResult.error("账号/邮箱密码不匹配~");
         }
         MkUser mkUser = mkUsers.get(0);
-        if (mkUser.getStatus() == -1){
+        if (mkUser.getStatus() == -1) {
             throw new MessageException("用户账号被封禁");
         }
         mkUser.desensitized();
@@ -110,6 +110,9 @@ public class MkUserServiceImpl implements MkUserService {
         jwtMap.put("nickName", mkUser.getNickName());
         jwtMap.put("status", String.valueOf(mkUser.getStatus()));
         List<Integer> userAuthRole = mkUserAuthMapper.findUserAuthMark(mkUser.getId());
+        if (userAuthRole.size() == 0) {
+            throw new MessageException("非法用户！");
+        }
         jwtMap.put(StringConstant.USER_AUTH, String.valueOf(userAuthRole.get(0)));
         String token = mkjwtUtil.createToken(jwtMap);
         //用户信息base64位编码保存
@@ -167,7 +170,7 @@ public class MkUserServiceImpl implements MkUserService {
             //重新设置时间
             redisUtil.expire(TokenPrefixEnum.TokenPre.getPrefix() + userId, TokenOverTime);
             Integer roleByToken = mkjwtUtil.getUserRoleByToken(authDto.getToken());
-            return ResponseResult.success("登陆状态未失效",roleByToken);
+            return ResponseResult.success("登陆状态未失效", roleByToken);
         }
         return ResponseResult.error("登陆失效");
     }
@@ -323,7 +326,7 @@ public class MkUserServiceImpl implements MkUserService {
         if (updateUserStatesDTO.status == 0) {
             mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.FREEZE_USER, Long.valueOf(mkJwtUtil.getUserIdFromHeader())));
         }
-           
+
         if (updateUserStatesDTO.status == 1) {
             mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.RECOVER_USER, Long.valueOf(mkJwtUtil.getUserIdFromHeader())));
         }
