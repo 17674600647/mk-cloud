@@ -12,3 +12,26 @@ spring:
         group: DEFAULT_GROUP
         namespace: 3908062f-c0bb-426d-8081-589594521b36  #dev命名空间的流水号
 
+seata:
+  tx-service-group: mk_tx_group #与config.txt 中的service.vgroupMapping.yg_tx_group=default一致
+  service:
+    vgroup-mapping:
+      mk_tx_group: default #与config.txt 中的service.vgroupMapping.yg_tx_group=default一致
+    grouplist:
+      default: 124.223.65.85:8091 #seata 服务地址
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 47.103.216.189:8848
+      username: nacos
+      password: '@Lzy2018.cn'
+  config:
+    type: nacos
+    nacos:
+      server-addr: 47.103.216.189:8848
+      group: DEFAULT_GROUP
+      username: nacos
+      password: '@Lzy2018.cn'
+      namespace: 3908062f-c0bb-426d-8081-589594521b36
+

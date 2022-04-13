@@ -138,6 +138,21 @@
             <groupId>com.github.houbb</groupId>
             <artifactId>sensitive-word</artifactId>
         </dependency>
+        <!--分布式事务Seata-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>seata-all</artifactId>
+                    <groupId>io.seata</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-all</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

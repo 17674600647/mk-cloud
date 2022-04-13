@@ -5,6 +5,7 @@ import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.NoteDTO;
 import com.glm.entity.ResponseResult;
 import com.glm.exception.ControllerFieldAspect;
+import com.glm.service.MkTypeAndNoteService;
 import com.glm.service.NoteService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +33,8 @@ import javax.validation.Valid;
 public class BaseServiceController {
     @Autowired
     NoteService noteService;
+    @Autowired
+    MkTypeAndNoteService mkTypeAndNoteService;
 
     @PostMapping("/save/note")
     @ApiOperation("保存/更新文章")
@@ -102,5 +105,10 @@ public class BaseServiceController {
     @ApiOperation("查询收藏的文章")
     public ResponseResult queryCollectNotes(@RequestBody @Valid  GetNotesDTO getNote) {
         return noteService.queryCollectNotes(getNote);
+    }
+    @PostMapping("/query/all/type")
+    @ApiOperation("查询所有的类型")
+    public ResponseResult queryAllType() {
+        return ResponseResult.success("查询成功", mkTypeAndNoteService.getAllTypeByUserId());
     }
 }

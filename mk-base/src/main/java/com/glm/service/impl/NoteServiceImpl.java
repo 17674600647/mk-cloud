@@ -20,11 +20,15 @@ import com.glm.entity.pojo.MkNotes;
 import com.glm.entity.vo.ObjectPageVO;
 import com.glm.mapper.MkCollectMapper;
 import com.glm.mapper.MkNoteMapper;
+import com.glm.mapper.MkTypeNoteMapper;
+import com.glm.service.MkTypeAndNoteService;
 import com.glm.service.NoteService;
 import com.glm.utils.MkJwtUtil;
 import com.glm.utils.MkKafkaUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,11 +57,17 @@ public class NoteServiceImpl implements NoteService {
 
     @Autowired
     MkCollectMapper mkCollectmapper;
+    @Autowired
+    MkTypeNoteMapper mkTypeNoteMapper;
+    @Autowired
+    MkTypeAndNoteService mkTypeAndNoteService;
 
     public static Short MKNOTE_SHARED = 1;
     public static Short MKNOTE_CHECK = 0;
     public static Short MKNOTE_DISHARE = -1;
 
+
+    @Transactional
     @Override
     public ResponseResult saveNote(NoteDTO noteDTO) {
         Long userId = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
@@ -69,6 +79,7 @@ public class NoteServiceImpl implements NoteService {
         if (StringUtils.isEmpty(noteDTO.getNoteId())) {
             int result = mkNoteMapper.insert(mkNotes);
             if (result == 1) {
+                mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(),mkNotes.getId());
                 mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.NEW_NOTE, userId));
                 return ResponseResult.success("保存成功!", String.valueOf(mkNotes.getId()));
             }
@@ -85,6 +96,7 @@ public class NoteServiceImpl implements NoteService {
                     .eq("id", Long.valueOf(noteDTO.getNoteId()));
             int result = mkNoteMapper.update(mkNotes, updateWrapper);
             if (result == 1) {
+                mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(),mkNotes.getId());
                 return ResponseResult.success("更新成功!", String.valueOf(mkNotes.getId()));
             }
             return ResponseResult.error("保存更新失败!");
@@ -171,7 +183,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public ResponseResult toShareNote(GetOneNoteDTO getNote) {
-        return  changeShareStatus(getNote, MKNOTE_CHECK);
+        return changeShareStatus(getNote, MKNOTE_CHECK);
 
     }
 
@@ -205,7 +217,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public ResponseResult toDishareNote(GetOneNoteDTO getNote) {
-       return changeShareStatus(getNote, MKNOTE_DISHARE);
+        return changeShareStatus(getNote, MKNOTE_DISHARE);
     }
 
     @Override
@@ -240,12 +252,12 @@ public class NoteServiceImpl implements NoteService {
         if (!userId.equals(mkNotes.getUserId())) {
             throw new MessageException("用户信息不匹配~");
         }
-        if (status==MKNOTE_CHECK ){
-                if (statusFromHeader.equals("0")){
-                    throw new MessageException("用户账号被冻结,无法分享~");
-                }
+        if (status == MKNOTE_CHECK) {
+            if (statusFromHeader.equals("0")) {
+                throw new MessageException("用户账号被冻结,无法分享~");
+            }
         }
-        if (statusFromHeader.equals("-1")){
+        if (statusFromHeader.equals("-1")) {
             throw new MessageException("用户账号被封禁");
         }
         mkNotes.setShareStatus(status);

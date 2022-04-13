@@ -81,7 +81,7 @@ public class MkJwtUtil {
         if (token != null) {
             return getUserIdByToken(token);
         }
-        return null;
+        throw new MessageException("无法从请求头中获取用户信息");
     }
 
     //从请求头中获取权限信息
@@ -91,7 +91,7 @@ public class MkJwtUtil {
         if (token != null) {
             return getUserRoleByToken(token);
         }
-        return null;
+        throw new MessageException("无法从请求头中获取用户权限信息");
     }
     //从请求头中获取status信息
     public String getUserStatusFromHeader() {
@@ -100,6 +100,6 @@ public class MkJwtUtil {
         if (token != null) {
             return getUserStatusByToken(token);
         }
-        return null;
+        throw new MessageException("无法从请求头中获取用户状态信息");
     }
 }

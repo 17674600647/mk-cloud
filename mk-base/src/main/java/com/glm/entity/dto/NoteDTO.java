@@ -1,11 +1,15 @@
 package com.glm.entity.dto;
 
+import com.glm.entity.pojo.MkType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import java.util.List;
 
 import static io.lettuce.core.pubsub.PubSubOutput.Type.message;
 
@@ -27,4 +31,6 @@ public class NoteDTO {
     @NotNull(message = "content不能为空！")
     @NotEmpty(message = "content不能为空格！")
     private String content;
+    @Size(min=1,max=5,message = "类型只能选择1-5个")
+    private List<String> mkTypeNameList;
 }

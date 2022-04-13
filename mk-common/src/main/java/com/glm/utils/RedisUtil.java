@@ -97,6 +97,7 @@ public class RedisUtil {
     public void cacheData(String key, Object value,Long time) {
         redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value),time, TimeUnit.SECONDS);
     }
+
     /**
      * 删除key
      *

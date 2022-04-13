@@ -59,6 +59,10 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         System.out.println(request.getURI().getPath());
+        if (request.getURI().getPath().contains("/manager/query/url/auth")){
+            //放行
+            return chain.filter(exchange);
+        }
         //1获取请求对象,和响应对象
         ServerHttpResponse response = exchange.getResponse();
         while (Objects.isNull(urlHashMap)){
@@ -78,7 +82,7 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
                 response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-        //2判断当前请求是否位登录,
+        //2判断当前请求是否不需要权限
         if (integers.contains(0)) {
             //放行
             return chain.filter(exchange);
