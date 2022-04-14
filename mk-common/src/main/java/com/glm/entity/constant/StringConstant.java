@@ -13,4 +13,5 @@ public  class StringConstant {
    public static final String USER_AUTH= "role";
    public static final String USER_STATUS= "status";
    public static final String KAFKA_TOPIC= "mkcloud";
+   public static final String LEADERBOARD_COLLECT= "leaderboard_collect_note";
 }

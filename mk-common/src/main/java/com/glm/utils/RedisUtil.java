@@ -2,12 +2,12 @@ package com.glm.utils;
 
 import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -86,7 +86,6 @@ public class RedisUtil {
     }
 
 
-
     /**
      * 将值放入缓存
      *
@@ -94,14 +93,14 @@ public class RedisUtil {
      * @param value 值
      * @return true成功 false 失败 缓存
      */
-    public void cacheData(String key, Object value,Long time) {
-        redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value),time, TimeUnit.SECONDS);
+    public void cacheData(String key, Object value, Long time) {
+        redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value), time, TimeUnit.SECONDS);
     }
 
     /**
      * 删除key
      *
-     * @param key   键
+     * @param key 键
      * @return true成功 false 失败 缓存
      */
     public Boolean delete(String key) {
@@ -552,4 +551,52 @@ public class RedisUtil {
     public void rightPop(String key, long timeout, TimeUnit unit) {
         redisTemplate.opsForList().rightPop(key, timeout, unit);
     }
+
+    /*---------------------------Zset-------------------------------*/
+
+    /**
+     * 批量添加排名分数
+     *
+     * @param redisKey
+     * @param map
+     */
+    public void ZSetBatchADD(String redisKey, Map<String, Double> map) {
+        Set<String> keyStrs = map.keySet();
+        HashSet<DefaultTypedTuple<String>> defaultTypedTuples = new HashSet<DefaultTypedTuple<String>>();
+        for (String key : keyStrs) {
+            Double score = map.get(key);
+            defaultTypedTuples.add(new DefaultTypedTuple<String>(key, score));
+        }
+        redisTemplate.opsForZSet().add(redisKey, defaultTypedTuples);
+    }
+
+    /**
+     * 给指定key加分数
+     *
+     * @param redisKey
+     */
+    public void ZSetBatchIncrementScore(String redisKey, Map<String, Double> map) {
+        Set<String> keyStrs = map.keySet();
+        HashSet<DefaultTypedTuple<String>> defaultTypedTuples = new HashSet<DefaultTypedTuple<String>>();
+        for (String key : keyStrs) {
+            Double score = map.get(key);
+            redisTemplate.opsForZSet().incrementScore(redisKey, key, score);
+        }
+
+    }
+
+    /**
+     * 给指定key加分数
+     *
+     * @param redisKey
+     */
+    public Map<String, Double> ZSetGetList(String redisKey, int start, int end) {
+        Set<DefaultTypedTuple<String>> set = redisTemplate.opsForZSet().rangeWithScores(redisKey, start, end);
+        HashMap<String, Double> stringDoubleHashMap = new HashMap<>();
+        for (DefaultTypedTuple<String> tuple : set) {
+            stringDoubleHashMap.put(tuple.getValue(), tuple.getScore());
+        }
+        return stringDoubleHashMap;
+    }
+
 }

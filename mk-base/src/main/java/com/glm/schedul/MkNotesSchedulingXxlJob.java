@@ -2,11 +2,15 @@ package com.glm.schedul;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.glm.entity.constant.StringConstant;
 import com.glm.entity.pojo.MkNotes;
 import com.glm.entity.pojo.MkScheduling;
+import com.glm.entity.vo.CollectNoteVO;
 import com.glm.mapper.EsMkNotesRepository;
+import com.glm.mapper.MkCollectMapper;
 import com.glm.mapper.MkNoteMapper;
 import com.glm.mapper.MkSchedulingMapper;
+import com.glm.utils.RedisUtil;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,8 +39,13 @@ public class MkNotesSchedulingXxlJob {
     MkNoteMapper mkNotesMapper;
 
     @Autowired
+    MkCollectMapper mkCollectMapper;
+
+    @Autowired
     MkSchedulingMapper mkSchedulingMapper;
 
+    @Autowired
+    RedisUtil redisUtil;
     public static final Integer MKNOTE_TO_ES = 1;
 
     /*每10分钟执行一次，使用xxj-job*/
@@ -61,7 +71,7 @@ public class MkNotesSchedulingXxlJob {
             for (MkScheduling mkScheduling : mkSchedulings) {
                 if (mkScheduling.getCreateTime() != null && mkScheduling.getOverTime() != null) {
                     //为了容错，多检测一秒
-                    lastUpdateDate = new Date(mkScheduling.getCreateTime().getTime()-1000);
+                    lastUpdateDate = new Date(mkScheduling.getCreateTime().getTime() - 1000);
                     nowUpdateTime = new Date();
                     break;
                 }
@@ -84,5 +94,10 @@ public class MkNotesSchedulingXxlJob {
         log.info("-----------定时任务结束------------------");
     }
 
-
+    @XxlJob("statisticalCollectionOfDataJobHandler")
+    public void updateDataToRedis() {
+        List<CollectNoteVO> collectNoteVOS = mkCollectMapper.countCollectNumb();
+        Map<String, Double> collectMap = collectNoteVOS.stream().collect(Collectors.toMap(CollectNoteVO::getKey, CollectNoteVO::getScore));
+        redisUtil.ZSetBatchADD(StringConstant.LEADERBOARD_COLLECT,collectMap);
+    }
 }

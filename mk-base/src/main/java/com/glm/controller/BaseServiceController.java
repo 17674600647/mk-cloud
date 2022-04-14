@@ -5,6 +5,7 @@ import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.NoteDTO;
 import com.glm.entity.ResponseResult;
 import com.glm.exception.ControllerFieldAspect;
+import com.glm.service.MkCollectService;
 import com.glm.service.MkTypeAndNoteService;
 import com.glm.service.NoteService;
 import io.swagger.annotations.Api;
@@ -35,6 +36,9 @@ public class BaseServiceController {
     NoteService noteService;
     @Autowired
     MkTypeAndNoteService mkTypeAndNoteService;
+
+    @Autowired
+    MkCollectService mkCollectService;
 
     @PostMapping("/save/note")
     @ApiOperation("保存/更新文章")
@@ -77,6 +81,7 @@ public class BaseServiceController {
     public ResponseResult getSharedNotesApi(@RequestBody @Valid GetNotesDTO getDeleteNote) {
         return noteService.getSharedNotesApi(getDeleteNote);
     }
+
     @PostMapping("/to/dishare/note")
     @ApiOperation("取消分享文章")
     public ResponseResult toDishareNote(@RequestBody @Valid GetOneNoteDTO getDisShareNote) {
@@ -103,12 +108,19 @@ public class BaseServiceController {
 
     @PostMapping("/query/collect/notes")
     @ApiOperation("查询收藏的文章")
-    public ResponseResult queryCollectNotes(@RequestBody @Valid  GetNotesDTO getNote) {
+    public ResponseResult queryCollectNotes(@RequestBody @Valid GetNotesDTO getNote) {
         return noteService.queryCollectNotes(getNote);
     }
+
     @PostMapping("/query/all/type")
     @ApiOperation("查询所有的类型")
     public ResponseResult queryAllType() {
         return ResponseResult.success("查询成功", mkTypeAndNoteService.getAllTypeByUserId());
+    }
+
+    @PostMapping("/query/leaderboard/data")
+    @ApiOperation("查询排行榜数据")
+    public ResponseResult queryLeaderboard() {
+        return mkCollectService.getLeaderboard();
     }
 }
