@@ -14,6 +14,7 @@ import com.glm.entity.dto.GetOneNoteDTO;
 import com.glm.entity.dto.NoteDTO;
 
 import com.glm.entity.enums.MkLogEnum;
+import com.glm.entity.enums.UserAuthEnum;
 import com.glm.entity.pojo.MkCollect;
 import com.glm.entity.pojo.MkNotes;
 
@@ -74,11 +75,15 @@ public class NoteServiceImpl implements NoteService {
     public ResponseResult saveNote(NoteDTO noteDTO) {
         Long userId = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
         MkNotes mkNotes = new MkNotes();
-        String replaceContent = SensitiveWordBs.newInstance().replace(noteDTO.getContent());
-        mkNotes.setContent(replaceContent);
-        mkNotes.setTitle(SensitiveWordBs.newInstance().replace(noteDTO.getTitle()));
+        //String replaceContent = SensitiveWordBs.newInstance().replace(noteDTO.getContent());
+        mkNotes.setContent(noteDTO.getContent());
+        //mkNotes.setTitle(SensitiveWordBs.newInstance().replace(noteDTO.getTitle()));
+        mkNotes.setTitle(noteDTO.getTitle());
         mkNotes.setUserId(userId);
         if (StringUtils.isEmpty(noteDTO.getNoteId())) {
+            if (noteDTO.getMkTypeNameList().size() == 0) {
+                throw new MessageException("类型不能为空！");
+            }
             int result = mkNoteMapper.insert(mkNotes);
             if (result == 1) {
                 mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(), mkNotes.getId());
@@ -109,15 +114,15 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public ResponseResult getPageNotes(GetNotesDTO getNote) {
         IPage<MkNotes> notePage = new Page<MkNotes>(getNote.getCurrentPage(), getNote.getPageSize());
-        IPage<MkTypeNote> idFromTypeIdPage ;
-        if (getNote.getNoteTypeId()==null){
-            idFromTypeIdPage=  mkTypeAndNoteService.getNotesIdFromTypeId(null, notePage);
-        } else{
-            idFromTypeIdPage=  mkTypeAndNoteService.getNotesIdFromTypeId(List.of(getNote.getNoteTypeId()), notePage);
+        IPage<MkTypeNote> idFromTypeIdPage;
+        if (getNote.getNoteTypeId() == null) {
+            idFromTypeIdPage = mkTypeAndNoteService.getNotesIdFromTypeId(null, notePage);
+        } else {
+            idFromTypeIdPage = mkTypeAndNoteService.getNotesIdFromTypeId(List.of(getNote.getNoteTypeId()), notePage);
         }
         List<Long> collect = idFromTypeIdPage.getRecords().stream().map(MkTypeNote::getNoteId).collect(Collectors.toList());
         ObjectPageVO<MkNotes> notesPageVO = new ObjectPageVO<MkNotes>();
-        if (collect.size()<1){
+        if (collect.size() < 1) {
             notesPageVO.setTotal(idFromTypeIdPage.getTotal());
             return ResponseResult.success("查询成功!", notesPageVO);
         }
@@ -148,6 +153,10 @@ public class NoteServiceImpl implements NoteService {
     public ResponseResult getOneNotes(GetOneNoteDTO getNote) {
         MkNotes mkNotes = mkNoteMapper.getOneNotes(Long.valueOf(getNote.getNoteId()));
         Long aLong = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
+        Integer userRoleFromHeader = mkJwtUtil.getUserRoleFromHeader();
+        if (userRoleFromHeader.equals(UserAuthEnum.ADMINISTRATOR.getMark())){
+            return ResponseResult.success("查询成功!", mkNotes);
+        }
         if (!mkNotes.getUserId().equals(aLong) && mkNotes.getShareStatus() == -1) {
             return ResponseResult.error("身份存在错误");
         }

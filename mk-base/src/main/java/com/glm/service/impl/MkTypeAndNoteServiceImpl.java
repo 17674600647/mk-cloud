@@ -62,7 +62,7 @@ public class MkTypeAndNoteServiceImpl implements MkTypeAndNoteService {
         //查询用户所有的type
         Map<String, Long> typeCollect = allTypeByUserId.stream().collect(Collectors.toMap(MkType::getName, MkType::getId));
         for (String mkType : mkTypeList) {
-            Long typeId = typeCollect.get(mkType);
+            Long typeId = typeCollect.get(mkType.replace(" ",""));
             //如果已经存在就添加进去
             if (!Objects.isNull(typeId)) {
                 mkTypeNoteMapper.insert(new MkTypeNote(userId, noteId, typeId));
@@ -72,13 +72,14 @@ public class MkTypeAndNoteServiceImpl implements MkTypeAndNoteService {
                 mkTypeNoteMapper.insert(new MkTypeNote(userId, noteId, mkType1.getId()));
             }
         }
+        redisUtil.delete(REDIS_MKTYPE + idFromHeader);
     }
 
     @Override
     public IPage<MkTypeNote> getNotesIdFromTypeId(List<Long> typeId, IPage page) {
         QueryWrapper<MkTypeNote> mkTypeNoteQueryWrapper = new QueryWrapper<>();
         mkTypeNoteQueryWrapper.select("DISTINCT note_id");
-        if (typeId != null&&!typeId.contains(2314324231234L)) {
+        if (typeId != null && !typeId.contains(2314324231234L)) {
             mkTypeNoteQueryWrapper.in("type_id", typeId);
         }
         String uerId = mkJwtUtil.getUserIdFromHeader();

@@ -26,7 +26,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 @TableName("mk_notes")
-@Document(indexName = "mknotes", shards = 5)
+@Document(indexName = "mknotes-ss", shards = 5)
 public class MkNotes implements Serializable {
     public static final long serialVersionUID = 1L;
 

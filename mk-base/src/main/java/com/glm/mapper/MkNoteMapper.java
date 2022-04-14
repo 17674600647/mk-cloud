@@ -26,7 +26,7 @@ public interface MkNoteMapper extends BaseMapper<MkNotes> {
             "ORDER BY create_time DESC")
     public IPage<MkNotes> getAllDeleteNotes(IPage<MkNotes> notes);
 
-    @Select("SELECT id,content,title,create_time,update_time,classic,user_id FROM mk_notes WHERE id = #{id}")
+    @Select("SELECT id,content,title,create_time,update_time,classic,user_id,share_status FROM mk_notes WHERE id = #{id}")
     public MkNotes getOneNotes(@Param("id") Long id);
 
     @Update("update mk_notes set deleted =0 where id=#{id}")
