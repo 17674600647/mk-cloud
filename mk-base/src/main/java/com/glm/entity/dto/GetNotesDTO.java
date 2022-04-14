@@ -23,4 +23,6 @@ public class GetNotesDTO {
     private Integer currentPage;
 
     private Integer shareStatus;
+
+    private Long noteTypeId;
 }

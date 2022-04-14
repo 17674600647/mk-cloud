@@ -17,6 +17,8 @@ import com.glm.entity.enums.MkLogEnum;
 import com.glm.entity.pojo.MkCollect;
 import com.glm.entity.pojo.MkNotes;
 
+import com.glm.entity.pojo.MkType;
+import com.glm.entity.pojo.MkTypeNote;
 import com.glm.entity.vo.ObjectPageVO;
 import com.glm.mapper.MkCollectMapper;
 import com.glm.mapper.MkNoteMapper;
@@ -54,11 +56,11 @@ public class NoteServiceImpl implements NoteService {
 
     @Autowired
     MkKafkaUtil mkKafkaUtil;
+    @Autowired
+    MkTypeNoteMapper mkTypeNoteMapper;
 
     @Autowired
     MkCollectMapper mkCollectmapper;
-    @Autowired
-    MkTypeNoteMapper mkTypeNoteMapper;
     @Autowired
     MkTypeAndNoteService mkTypeAndNoteService;
 
@@ -79,7 +81,7 @@ public class NoteServiceImpl implements NoteService {
         if (StringUtils.isEmpty(noteDTO.getNoteId())) {
             int result = mkNoteMapper.insert(mkNotes);
             if (result == 1) {
-                mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(),mkNotes.getId());
+                mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(), mkNotes.getId());
                 mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.NEW_NOTE, userId));
                 return ResponseResult.success("保存成功!", String.valueOf(mkNotes.getId()));
             }
@@ -96,7 +98,7 @@ public class NoteServiceImpl implements NoteService {
                     .eq("id", Long.valueOf(noteDTO.getNoteId()));
             int result = mkNoteMapper.update(mkNotes, updateWrapper);
             if (result == 1) {
-                mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(),mkNotes.getId());
+                mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(), mkNotes.getId());
                 return ResponseResult.success("更新成功!", String.valueOf(mkNotes.getId()));
             }
             return ResponseResult.error("保存更新失败!");
@@ -107,14 +109,27 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public ResponseResult getPageNotes(GetNotesDTO getNote) {
         IPage<MkNotes> notePage = new Page<MkNotes>(getNote.getCurrentPage(), getNote.getPageSize());
+        IPage<MkTypeNote> idFromTypeIdPage ;
+        if (getNote.getNoteTypeId()==null){
+            idFromTypeIdPage=  mkTypeAndNoteService.getNotesIdFromTypeId(null, notePage);
+        } else{
+            idFromTypeIdPage=  mkTypeAndNoteService.getNotesIdFromTypeId(List.of(getNote.getNoteTypeId()), notePage);
+        }
+        List<Long> collect = idFromTypeIdPage.getRecords().stream().map(MkTypeNote::getNoteId).collect(Collectors.toList());
+        ObjectPageVO<MkNotes> notesPageVO = new ObjectPageVO<MkNotes>();
+        if (collect.size()<1){
+            notesPageVO.setTotal(idFromTypeIdPage.getTotal());
+            return ResponseResult.success("查询成功!", notesPageVO);
+        }
         QueryWrapper<MkNotes> queryWrapper = Wrappers.<MkNotes>query()
                 .orderByDesc("create_time")
                 .select("id", "title", "create_time", "update_time", "classic", "user_id", "share_status")
-                .eq("user_id", Long.valueOf(mkJwtUtil.getUserIdFromHeader()));
-        IPage<MkNotes> mkNotesIPage = mkNoteMapper.selectPage(notePage, queryWrapper);
-        ObjectPageVO<MkNotes> notesPageVO = new ObjectPageVO<MkNotes>();
-        notesPageVO.setTotal(mkNotesIPage.getTotal());
-        notesPageVO.setNoteList(mkNotesIPage.getRecords());
+                .eq("user_id", Long.valueOf(mkJwtUtil.getUserIdFromHeader()))
+                .in("id", collect);
+        List<MkNotes> mkNotes = mkNoteMapper.selectList(queryWrapper);
+
+        notesPageVO.setTotal(idFromTypeIdPage.getTotal());
+        notesPageVO.setNoteList(mkNotes);
         return ResponseResult.success("查询成功!", notesPageVO);
     }
 

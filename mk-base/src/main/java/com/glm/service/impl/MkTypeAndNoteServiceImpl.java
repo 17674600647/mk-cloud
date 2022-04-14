@@ -2,8 +2,10 @@ package com.glm.service.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+
 import com.glm.config.exception.MessageException;
-import com.glm.entity.ResponseResult;
+
 import com.glm.entity.pojo.MkType;
 import com.glm.entity.pojo.MkTypeNote;
 import com.glm.mapper.MkTypeMapper;
@@ -43,6 +45,7 @@ public class MkTypeAndNoteServiceImpl implements MkTypeAndNoteService {
         QueryWrapper<MkType> queryWrapper = new QueryWrapper<MkType>();
         queryWrapper.or().eq("user_id", Long.valueOf(idFromHeader));
         queryWrapper.or().isNull("user_id");
+        queryWrapper.orderByAsc("create_time");
         List<MkType> mkTypes = mkTypeMapper.selectList(queryWrapper);
         redisUtil.cacheData(REDIS_MKTYPE + idFromHeader, mkTypes, 600L);
         return mkTypes;
@@ -70,4 +73,18 @@ public class MkTypeAndNoteServiceImpl implements MkTypeAndNoteService {
             }
         }
     }
+
+    @Override
+    public IPage<MkTypeNote> getNotesIdFromTypeId(List<Long> typeId, IPage page) {
+        QueryWrapper<MkTypeNote> mkTypeNoteQueryWrapper = new QueryWrapper<>();
+        mkTypeNoteQueryWrapper.select("DISTINCT note_id");
+        if (typeId != null&&!typeId.contains(2314324231234L)) {
+            mkTypeNoteQueryWrapper.in("type_id", typeId);
+        }
+        String uerId = mkJwtUtil.getUserIdFromHeader();
+        mkTypeNoteQueryWrapper.in("user_id", List.of(Long.valueOf(uerId)));
+        return mkTypeNoteMapper.selectPage(page, mkTypeNoteQueryWrapper);
+    }
+
+
 }
