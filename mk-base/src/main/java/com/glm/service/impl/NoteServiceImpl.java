@@ -88,7 +88,6 @@ public class NoteServiceImpl implements NoteService {
             if (result == 1) {
                 mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(), mkNotes.getId());
                 mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.NEW_NOTE, userId));
-                var x = 2 / 0;
                 return ResponseResult.success("保存成功!", String.valueOf(mkNotes.getId()));
             }
             return ResponseResult.error("保存失败!");

@@ -244,10 +244,15 @@ public class MkUserServiceImpl implements MkUserService {
         String idFromHeader = mkjwtUtil.getUserIdFromHeader();
         UpdateWrapper<MkUser> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", Long.valueOf(idFromHeader));
-        int update = userMapper.update(mkUser, updateWrapper);
-        redisUtil.delete(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + idFromHeader);
-        redisUtil.delete(TokenPrefixEnum.TOKEN_USER_INFO_OUT.getPrefix() + idFromHeader);
+        int update = 0;
+        try {
+            update = userMapper.update(mkUser, updateWrapper);
+        } catch (Exception e) {
+            return ResponseResult.error("信息更新失败！请检查信息~");
+        }
         if (update == 0) {
+            redisUtil.delete(TokenPrefixEnum.TOKEN_USER_INFO.getPrefix() + idFromHeader);
+            redisUtil.delete(TokenPrefixEnum.TOKEN_USER_INFO_OUT.getPrefix() + idFromHeader);
             return ResponseResult.error("信息更新失败");
         }
         mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.UPDATE_INFO, Long.valueOf(idFromHeader)));

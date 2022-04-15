@@ -94,12 +94,12 @@
 #          password: 12313
 
 ## seata 配置
-seata:
-  enabled: true
-  tx-service-group: my-tx-group
-  service:
-    vgroup-mapping.my-tx-group: seata-server
-    grouplist.seata-server: 192.168.1.8:8091
+#seata:
+#  enabled: true
+#  tx-service-group: my-tx-group
+#  service:
+#    vgroup-mapping.my-tx-group: seata-server
+#    grouplist.seata-server: 192.168.1.8:8091
 #feign:
 #  hystrix:
 #    enabled: true

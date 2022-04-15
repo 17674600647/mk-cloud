@@ -1,6 +1,7 @@
 package com.glm.entity.dto;
 
 import cn.hutool.crypto.SecureUtil;
+import com.github.houbb.sensitive.word.bs.SensitiveWordBs;
 import com.glm.entity.pojo.MkUser;
 import com.glm.service.MkUserService;
 import lombok.AllArgsConstructor;
@@ -37,7 +38,7 @@ public class UpdateDTO {
         }
         //修改昵称
         if (this.flag == 1) {
-            return new MkUser().setNickName(this.nickName);
+            return new MkUser().setNickName( SensitiveWordBs.newInstance().replace(this.nickName));
         }
         //修改年龄
         if (this.flag == 2) {

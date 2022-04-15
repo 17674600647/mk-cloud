@@ -28,4 +28,15 @@ public class ExceptionPlus extends  MyExceptionCatch{
         //返回通用异常
         return ResponseResult.error(exception.getMessage());
     }
+
+    //捕获Exception此类异常
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ResponseResult exceptionX(Exception exception) {
+        exception.printStackTrace();
+        //记录日志
+        log.error("全局异常捕捉器 catch exception:{}", exception.getMessage());
+        //返回通用异常
+        return ResponseResult.error(exception.getMessage());
+    }
 }
