@@ -50,3 +50,11 @@ logging:
       springframework:
         boot:
           autoconfigure: ERROR         # 日志不打印条件评估报告
+#feign:
+#  hystrix:
+#    enabled: true
+#  httpclient:
+#    enabled: true
+#    connection-timeout: 60000
+#    max-connections: 60000
+#    max-connections-per-route: 100

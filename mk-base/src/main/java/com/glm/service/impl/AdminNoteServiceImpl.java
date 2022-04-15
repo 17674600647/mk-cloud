@@ -24,6 +24,7 @@ import com.glm.mapper.MkUrlAuthMapper;
 import com.glm.service.AdminNoteService;
 import com.glm.utils.MkJwtUtil;
 import com.glm.utils.MkKafkaUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@GlobalTransactional
 public class AdminNoteServiceImpl implements AdminNoteService {
     @Autowired
     MkJwtUtil mkJwtUtil;

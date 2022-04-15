@@ -7,6 +7,7 @@ import com.glm.entity.OssEntity;
 import com.glm.entity.pojo.MkPicUrl;
 import com.glm.mapper.MkPicUrlMapper;
 import com.glm.service.AliOssService;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.UUID;
  * Date:     2021/2/15 23:04
  */
 @Service
+@GlobalTransactional
 public class AliOssServiceImpl implements AliOssService, InitializingBean {
     @Autowired
     private MkPicUrlMapper mkPicUrlMapper;

@@ -6,6 +6,7 @@ import com.glm.entity.pojo.MkNotes;
 import com.glm.entity.vo.ObjectPageVO;
 import com.glm.service.NoteSearchService;
 import com.glm.utils.EsUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Log4j2
+@GlobalTransactional
 public class NoteSearchServiceImpl implements NoteSearchService {
 
     @Autowired

@@ -9,6 +9,7 @@ import com.glm.entity.dto.QueryLogsPageDTO;
 import com.glm.entity.vo.LogsVO;
 import com.glm.mapper.MkLogMapper;
 import com.glm.service.LogsService;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import javax.management.Query;
 import java.util.logging.LogManager;
 
 @Service
+@GlobalTransactional
 public class LogsServiceImpl implements LogsService {
     @Autowired
     MkLogMapper mkLogMapper;

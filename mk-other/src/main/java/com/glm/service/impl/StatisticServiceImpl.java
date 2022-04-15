@@ -7,6 +7,7 @@ import com.glm.entity.vo.DataReportArrayVO;
 import com.glm.entity.vo.DataReportVo;
 import com.glm.mapper.StatisticMapper;
 import com.glm.service.StatisticService;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@GlobalTransactional
 public class StatisticServiceImpl implements StatisticService {
     @Autowired
     StatisticMapper statisticMapper;

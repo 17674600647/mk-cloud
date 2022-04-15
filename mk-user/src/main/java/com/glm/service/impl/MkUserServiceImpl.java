@@ -38,6 +38,7 @@ import com.glm.utils.MkJwtUtil;
 import com.glm.utils.MkKafkaUtil;
 import com.glm.utils.RedisUtil;
 
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ import java.util.*;
  */
 @Service
 @Log4j2
+@GlobalTransactional
 public class MkUserServiceImpl implements MkUserService {
     @Autowired
     private MkUserMapper userMapper;

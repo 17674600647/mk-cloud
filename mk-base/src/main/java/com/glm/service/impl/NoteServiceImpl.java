@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Log4j2
-@Transactional
+@GlobalTransactional
 public class NoteServiceImpl implements NoteService {
     @Autowired
     MkJwtUtil mkJwtUtil;
@@ -70,7 +70,7 @@ public class NoteServiceImpl implements NoteService {
     public static Short MKNOTE_DISHARE = -1;
 
 
-    @Transactional
+
     @Override
     public ResponseResult saveNote(NoteDTO noteDTO) {
         Long userId = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
@@ -88,6 +88,7 @@ public class NoteServiceImpl implements NoteService {
             if (result == 1) {
                 mkTypeAndNoteService.insertAllType(noteDTO.getMkTypeNameList(), mkNotes.getId());
                 mkKafkaUtil.send(MkLogs.mkLogsByMkLogEnum(MkLogEnum.NEW_NOTE, userId));
+                var x = 2 / 0;
                 return ResponseResult.success("保存成功!", String.valueOf(mkNotes.getId()));
             }
             return ResponseResult.error("保存失败!");
@@ -154,7 +155,7 @@ public class NoteServiceImpl implements NoteService {
         MkNotes mkNotes = mkNoteMapper.getOneNotes(Long.valueOf(getNote.getNoteId()));
         Long aLong = Long.valueOf(mkJwtUtil.getUserIdFromHeader());
         Integer userRoleFromHeader = mkJwtUtil.getUserRoleFromHeader();
-        if (userRoleFromHeader.equals(UserAuthEnum.ADMINISTRATOR.getMark())){
+        if (userRoleFromHeader.equals(UserAuthEnum.ADMINISTRATOR.getMark())) {
             return ResponseResult.success("查询成功!", mkNotes);
         }
         if (!mkNotes.getUserId().equals(aLong) && mkNotes.getShareStatus() == -1) {

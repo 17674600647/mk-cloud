@@ -13,6 +13,7 @@ import com.glm.mapper.MkTypeNoteMapper;
 import com.glm.service.MkTypeAndNoteService;
 import com.glm.utils.MkJwtUtil;
 import com.glm.utils.RedisUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@GlobalTransactional
 public class MkTypeAndNoteServiceImpl implements MkTypeAndNoteService {
     @Autowired
     MkTypeMapper mkTypeMapper;
