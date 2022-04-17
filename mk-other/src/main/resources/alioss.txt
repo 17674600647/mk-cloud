@@ -1,4 +1,4 @@
-accessKeyId=LTAI5tS7rjUMM7PhHcHjxrsG
-accessKeySecret=Kc4Gw5W0qEsU4CI9VEjJhoU4m9p6Dm
+accessKeyId=XXXX
+accessKeySecret=XXXXX
 BucketName=mk-cloud
 endpoint=https://oss-cn-hangzhou.aliyuncs.com

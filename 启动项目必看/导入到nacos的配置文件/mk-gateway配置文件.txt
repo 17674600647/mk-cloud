@@ -1,0 +1,51 @@
+server:
+  port: 11300
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      location: files
+      file-size-threshold: 0B
+      max-file-size: 30MB
+      max-request-size: 30MB
+  cloud:
+    nacos:
+      discovery:
+        server-addr: [ip]:8848
+        namespace: 3908062f-c0bb-426d-8081-589594521b36
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*" #跨域处理 允许所有的域
+            allowedHeaders: "*" #允许所有的请求头
+            allowedMethods: # 支持的方法
+              - GET
+              - POST
+              - PUT
+              - DELETE
+routes:
+        # 平台管理
+        - id: wemedia
+          uri: lb://mk-user
+          predicates:
+          - Path=/mkuser/** #判断匹配条件,即地址带有/user/**的请求,会转发至lb:mk-user
+          filters:
+          - StripPrefix= 1 #去掉Path前缀,参数为1代表去掉/user
+logging:
+  level:
+    org:
+      springframework:
+        boot:
+          autoconfigure: ERROR         # 日志不打印条件评估报告
+Jwt:
+  key: mkcloud
+
+feign:
+  hystrix:
+    enabled: true
+  httpclient:
+    enabled: true
+    connection-timeout: 60000
+    max-connections: 60000
+    max-connections-per-route: 100

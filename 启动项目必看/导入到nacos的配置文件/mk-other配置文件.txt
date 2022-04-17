@@ -1,0 +1,103 @@
+server:
+  port: 11302
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      location: /data/upload_file
+      file-size-threshold: 0B
+      max-file-size: 30MB
+      max-request-size: 30MB
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://[ip]:5432/mk-cloud?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: postgres
+    password: xxxx
+  kafka:
+    # 消费者
+    consumer:
+      group-id: mkcloud
+      auto-offset-reset: earliest
+      bootstrap-servers: [ip]:9092
+    # 生产者
+    producer:
+      bootstrap-servers: [ip]:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 47.103.216.189:8848
+        namespace: 3908062f-c0bb-426d-8081-589594521b36
+  redis:
+    host: [ip]
+    port: 6379
+    password: xxxx
+    timeout: 30000
+
+# 设置Mapper接口所对应的XML文件位置，如果你在Mapper接口中有自定义方法，需要进行该配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  # 设置别名包扫描路径，通过该属性可以给包中的类注册别名
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # 逻辑删除
+  global-config:
+    db-config:
+      logic-delete-field: deleted # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+#knife4j整合配置
+knife4j:
+  enableAggregation: false
+  nacos:
+    enable: false
+    serviceUrl: http://[ip]:10000/nacos/
+    routeAuth:
+      enable: true
+      username: test
+      password: 12313
+    routes:
+      - name: 订单服务
+        serviceName: service-order
+        location: /v2/api-docs?group=default
+        swaggerVersion: 2.0
+        servicePath: /order
+        routeAuth:
+          enable: true
+          username: test
+          password: 12313
+#redis前缀配置
+Email:
+  checkCode: mkcloud_
+#log4j2配置
+logging:
+  config: classpath:log4j2.xml
+Jwt:
+  key: MkCloudAuth
+xxl:
+  job:
+    admin:
+      addresses: http://[ip]:12700/xxl-job-admin
+    executor:
+      ip:
+      port: 9998
+      logpath: /data/applogs/xxl-job/jobhandler
+      appname: other-job
+      logRetentionDays: 30
+
+# seata 配置
+seata:
+  enabled: true
+  tx-service-group: my-tx-group
+  service:
+    vgroup-mapping.my-tx-group: seata-server
+    grouplist.seata-server: [ip]:8091
+feign:
+  hystrix:
+    enabled: true
+  httpclient:
+    enabled: true
+    connection-timeout: 60000
+    max-connections: 60000
+    max-connections-per-route: 100
